@@ -62,6 +62,13 @@ service cloud.firestore {
              data.email is string && data.email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
 
+    function isValidComment(comment) {
+      return comment.authorId is string &&
+             comment.authorName is string &&
+             comment.content is string && comment.content.size() > 0 &&
+             comment.createdAt is number;
+    }
+
     // ===============================================================
     // Rules
     // ===============================================================
@@ -75,10 +82,21 @@ service cloud.firestore {
                     isValidStory(request.resource.data) &&
                     (request.resource.data.authorId == request.auth.uid || !('authorId' in request.resource.data));
       
-      // Only author can update their own story (except for likes)
+      // Update rules: author updates story, anyone can add likes/comments/votes
       allow update: if (isDocOwner() && isValidStory(request.resource.data)) ||
                     (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likesCount']) &&
-                     request.resource.data.likesCount == resource.data.likesCount + 1);
+                     request.resource.data.likesCount == resource.data.likesCount + 1) ||
+                    (isAuthenticated() && 
+                     request.resource.data.diff(resource.data).affectedKeys().hasOnly(['comments']) &&
+                     request.resource.data.comments.size() == resource.data.comments.size() + 1 &&
+                     request.resource.data.comments[request.resource.data.comments.size() - 1].authorId == request.auth.uid &&
+                     isValidComment(request.resource.data.comments[request.resource.data.comments.size() - 1])) ||
+                    (isAuthenticated() && 
+                     request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotedBy', 'downvotedBy'])) ||
+                    (isAuthenticated() && 
+                     request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotedBy'])) ||
+                    (isAuthenticated() && 
+                     request.resource.data.diff(resource.data).affectedKeys().hasOnly(['downvotedBy']));
       
       // Only author can delete
       allow delete: if isDocOwner();

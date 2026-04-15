@@ -2,7 +2,7 @@ import { Story } from '../types';
 import { CATEGORIES, EMOTIONS } from '../constants';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { X, Heart, Share2, MapPin, Clock, User } from 'lucide-react';
+import { X, Heart, Share2, MapPin, Clock, User, ArrowLeft } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -25,8 +25,8 @@ export default function StoryDetail({ story, onClose, onLike }: StoryDetailProps
       className="fixed inset-y-0 right-0 w-full md:w-[500px] bg-white shadow-2xl z-50 flex flex-col border-l border-border"
     >
       <div className="p-6 border-b border-border flex justify-between items-center bg-background/50 backdrop-blur-sm">
-        <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full hover:bg-accent">
-          <X className="w-5 h-5 text-muted" />
+        <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full hover:bg-red-50 hover:text-red-600">
+          <ArrowLeft className="w-5 h-5" />
         </Button>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" className="rounded-full gap-2 text-[10px] font-black uppercase tracking-widest border-border" onClick={() => onLike(story.id)}>
@@ -61,9 +61,13 @@ export default function StoryDetail({ story, onClose, onLike }: StoryDetailProps
           
           <div className="grid grid-cols-2 gap-6 py-8 border-y border-border">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center border border-border">
-                <User className="w-5 h-5 text-primary" />
-              </div>
+              {story.authorImage ? (
+                <img src={story.authorImage} alt={story.authorName} className="w-11 h-11 rounded-full border border-border object-cover" referrerPolicy="no-referrer" />
+              ) : (
+                <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center border border-border">
+                  <User className="w-5 h-5 text-primary" />
+                </div>
+              )}
               <div>
                 <p className="text-[9px] uppercase font-black text-muted tracking-widest leading-none mb-1">Author</p>
                 <p className="text-sm font-bold text-foreground">{story.authorName || 'Anonymous'}</p>

@@ -108,6 +108,7 @@ export default function App() {
         likesCount: 0,
         authorId: user?.uid || null,
         authorName: user?.displayName || 'Anonymous',
+        authorImage: user?.photoURL || undefined,
       });
       setIsAddingStory(false);
       setClickCoords(null);

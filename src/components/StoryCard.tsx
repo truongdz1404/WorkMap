@@ -2,7 +2,7 @@ import { Story } from '../types';
 import { CATEGORIES, EMOTIONS } from '../constants';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
-import { Heart, MessageSquare, Clock } from 'lucide-react';
+import { Heart, Clock, User } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 interface StoryCardProps {
@@ -17,43 +17,54 @@ export default function StoryCard({ story, onClick }: StoryCardProps) {
 
   return (
     <Card 
-      className="cursor-pointer hover:shadow-md transition-all border-transparent bg-background hover:border-primary/30 group rounded-xl"
+      className="cursor-pointer hover:shadow-lg transition-all border border-border/50 bg-white hover:border-primary/50 group rounded-2xl overflow-hidden"
       onClick={onClick}
     >
-      <CardHeader className="p-5 pb-2">
-        <div className="flex justify-between items-start mb-2">
+      <CardHeader className="p-6 pb-3">
+        <div className="flex justify-between items-start gap-3 mb-3">
           <Badge 
             variant="outline" 
-            className="text-[9px] uppercase font-black tracking-widest px-2 py-0.5"
-            style={{ borderColor: category?.color, color: category?.color, backgroundColor: `${category?.color}10` }}
+            className="text-[10px] uppercase font-black tracking-widest px-3 py-1 flex-shrink-0"
+            style={{ borderColor: category?.color, color: category?.color, backgroundColor: `${category?.color}15` }}
           >
             {category?.label}
           </Badge>
           {emotion && (
-            <div className="flex items-center gap-1 bg-white px-2 py-0.5 rounded-full border border-border shadow-sm">
-              <span className="text-xs">{emotion.icon}</span>
-              <span className="text-[9px] uppercase font-bold text-muted">{emotion.label}</span>
+            <div className="flex items-center gap-1.5 bg-accent px-2.5 py-1 rounded-full border border-border/50 text-[10px] font-bold uppercase tracking-widest whitespace-nowrap flex-shrink-0">
+              <span className="text-base leading-none">{emotion.icon}</span>
+              <span>{emotion.label}</span>
             </div>
           )}
         </div>
-        <CardTitle className="text-base font-serif font-bold line-clamp-1 group-hover:text-primary transition-colors">
+        <CardTitle className="text-lg font-serif font-bold line-clamp-2 group-hover:text-primary transition-colors leading-tight">
           {story.title}
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-5 pt-0">
-        <p className="text-xs text-muted leading-relaxed line-clamp-2 mb-4">
+      <CardContent className="p-6 pt-3 space-y-4">
+        <p className="text-sm text-foreground/70 leading-relaxed line-clamp-2">
           {story.content}
         </p>
-        <div className="flex items-center justify-between text-[10px] text-muted font-bold uppercase tracking-wider">
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1">
-              <Heart className="w-3 h-3 text-secondary" /> {story.likesCount}
+        
+        <div className="flex items-center justify-between pt-2 border-t border-border/30">
+          <div className="flex items-center gap-4 text-[11px] text-muted font-bold uppercase tracking-wider">
+            <span className="flex items-center gap-1.5 hover:text-secondary transition-colors">
+              <Heart className="w-4 h-4" /> {story.likesCount}
             </span>
-            <span className="flex items-center gap-1 opacity-60">
-              <Clock className="w-3 h-3" /> {formatDistanceToNow(story.createdAt)} ago
+            <span className="flex items-center gap-1.5">
+              <Clock className="w-4 h-4" /> {formatDistanceToNow(story.createdAt)} ago
             </span>
           </div>
-          <span className="text-primary/70">{story.authorName || 'Anonymous'}</span>
+        </div>
+        
+        <div className="flex items-center gap-2 pt-1">
+          {story.authorImage ? (
+            <img src={story.authorImage} alt={story.authorName} className="w-5 h-5 rounded-full border border-border/50 object-cover" referrerPolicy="no-referrer" />
+          ) : (
+            <div className="w-5 h-5 rounded-full bg-accent border border-border/50 flex items-center justify-center">
+              <User className="w-3 h-3 text-muted" />
+            </div>
+          )}
+          <span className="text-xs font-bold text-foreground truncate">{story.authorName || 'Anonymous'}</span>
         </div>
       </CardContent>
     </Card>

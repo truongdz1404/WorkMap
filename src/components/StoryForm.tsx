@@ -78,20 +78,20 @@ export default function StoryForm({ latitude, longitude, onSubmit, onClose, isSu
 
         <div className="space-y-2">
           <label className="text-[10px] font-black text-muted uppercase tracking-widest">How did you feel?</label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-2.5">
             {EMOTIONS.map((emo) => (
               <button
                 key={emo.value}
                 type="button"
                 onClick={() => setEmotion(emotion === emo.value ? 'none' : emo.value)}
-                className={`flex flex-col items-center p-3 rounded-xl border transition-all ${
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${
                   emotion === emo.value 
-                    ? 'border-primary bg-primary/10 text-primary shadow-inner' 
-                    : 'border-border bg-accent/20 hover:border-muted text-muted'
+                    ? 'border-primary bg-primary/15 shadow-md' 
+                    : 'border-border bg-white hover:border-primary/30 hover:bg-accent/30'
                 }`}
               >
-                <span className="text-xl">{emo.icon}</span>
-                <span className="text-[9px] mt-1 uppercase font-black tracking-widest">{emo.label}</span>
+                <span className="text-2xl mb-1">{emo.icon}</span>
+                <span className="text-[8px] font-black tracking-widest text-foreground leading-tight">{emo.label}</span>
               </button>
             ))}
           </div>

@@ -13,6 +13,7 @@ export interface Story {
   likesCount: number;
   authorId?: string;
   authorName?: string;
+  authorImage?: string;
 }
 
 export interface UserProfile {

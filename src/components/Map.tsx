@@ -12,16 +12,25 @@ interface MapProps {
   selectedStoryId?: string;
 }
 
-const createCustomIcon = (category: string) => {
+const createCustomIcon = (story: Story) => {
+  const { category, authorImage } = story;
   const cat = CATEGORIES.find(c => c.value === category) || CATEGORIES[CATEGORIES.length - 1];
   const iconHtml = renderToString(
     <div className="relative flex items-center justify-center">
-      <div 
-        className="w-8 h-8 rounded-full flex items-center justify-center shadow-lg border-2 border-white"
-        style={{ backgroundColor: cat.color }}
-      >
-        <MapPin className="w-5 h-5 text-white" />
-      </div>
+      {authorImage ? (
+        <img
+          src={authorImage}
+          alt="Story author"
+          className="w-8 h-8 rounded-full object-cover shadow-lg border-2 border-white"
+        />
+      ) : (
+        <div
+          className="w-8 h-8 rounded-full flex items-center justify-center shadow-lg border-2 border-white"
+          style={{ backgroundColor: cat.color }}
+        >
+          <MapPin className="w-5 h-5 text-white" />
+        </div>
+      )}
       <div 
         className="absolute -bottom-1 w-2 h-2 rotate-45"
         style={{ backgroundColor: cat.color }}
@@ -64,21 +73,21 @@ export default function Map({ stories, onSelectStory, onMapClick, selectedStoryI
         <Marker 
           key={story.id} 
           position={[story.latitude, story.longitude]}
-          icon={createCustomIcon(story.category)}
+          icon={createCustomIcon(story)}
           eventHandlers={{
             click: () => onSelectStory(story),
           }}
         >
           <Popup>
-            <div className="p-3 max-w-md">
+            <div className="p-3 w-72 max-w-[85vw]">
               <h3 className="font-bold text-lg mb-1">{story.title}</h3>
               <p className="text-sm text-gray-600 line-clamp-2 mb-2">{story.content}</p>
-              <button 
+              {/* <button 
                 onClick={() => onSelectStory(story)}
                 className="text-xs font-semibold text-blue-600 hover:underline"
               >
                 Read more
-              </button>
+              </button> */}
             </div>
           </Popup>
         </Marker>

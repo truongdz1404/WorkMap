@@ -51,7 +51,7 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
   }, [onLoadMore, isLoadingMore]);
 
   return (
-    <div className="h-full flex flex-col bg-card border-l border-border w-full md:w-[340px] shadow-xl z-10 order-2">
+    <div className="h-full min-h-0 flex flex-col bg-card border-l border-border w-full md:w-[340px] shadow-xl z-10 order-2">
       <div className="p-8 border-b border-border">
         <div className="flex items-center gap-2 mb-6">
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
@@ -104,7 +104,7 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
         </div>
       </div>
 
-      <ScrollArea ref={scrollRef} className="flex-1 px-6">
+      <ScrollArea ref={scrollRef} className="flex-1 min-h-0 px-6">
         <div className="py-6 space-y-4">
           <div className="flex items-center justify-between mb-2 px-2">
             <h2 className="text-sm font-serif font-bold text-foreground flex items-center gap-2">

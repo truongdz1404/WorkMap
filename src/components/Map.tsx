@@ -70,7 +70,7 @@ export default function Map({ stories, onSelectStory, onMapClick, selectedStoryI
           }}
         >
           <Popup>
-            <div className="p-3 max-w-xs">
+            <div className="p-3 max-w-md">
               <h3 className="font-bold text-lg mb-1">{story.title}</h3>
               <p className="text-sm text-gray-600 line-clamp-2 mb-2">{story.content}</p>
               <button 

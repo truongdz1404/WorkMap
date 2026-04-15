@@ -84,7 +84,7 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
             {emotion && (
               <div className="flex items-center gap-2 bg-accent/50 px-3 py-1 rounded-full border border-border">
                 <span className="text-lg">{emotion.icon}</span>
-                <span className="text-[9px] uppercase font-black text-muted tracking-widest">{emotion.label}</span>
+                <span className="text-[9px] uppercase font-black tracking-widest">{emotion.label}</span>
               </div>
             )}
           </div>
@@ -108,10 +108,10 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
             </div>
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center border border-border">
-                <Clock className="w-5 h-5 text-secondary" />
+                <Clock className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[9px] uppercase font-black text-muted tracking-widest leading-none mb-1">Shared</p>
+                {/* <p className="text-[9px] uppercase font-black text-muted tracking-widest leading-none mb-1">Shared</p> */}
                 <p className="text-sm font-bold text-foreground">{formatDistanceToNow(story.createdAt)} ago</p>
               </div>
             </div>
@@ -124,7 +124,7 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
           </p>
         </div>
 
-        <div className="mt-16 p-8 bg-accent/20 rounded-2xl border border-border">
+        {/* <div className="mt-16 p-8 bg-accent/20 rounded-2xl border border-border">
           <div className="flex items-center gap-2 text-muted mb-3">
             <MapPin className="w-4 h-4" />
             <span className="text-[10px] font-black uppercase tracking-widest">Location Context</span>
@@ -132,7 +132,7 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
           <p className="text-sm font-bold text-muted">
             Coordinates: {story.latitude.toFixed(4)}, {story.longitude.toFixed(4)}
           </p>
-        </div>
+        </div> */}
 
         {story.comments && story.comments.length > 0 && (
           <div className="mt-16 space-y-4">

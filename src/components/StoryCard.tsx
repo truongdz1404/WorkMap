@@ -2,18 +2,24 @@ import { Story } from '../types';
 import { CATEGORIES, EMOTIONS } from '../constants';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
-import { Heart, Clock, User } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Clock, User, MessageCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 interface StoryCardProps {
   story: Story;
   onClick: () => void;
+  onUpvote?: (storyId: string) => void;
+  onDownvote?: (storyId: string) => void;
+  onComment?: (storyId: string) => void;
+  currentUserId?: string;
   key?: string;
 }
 
-export default function StoryCard({ story, onClick }: StoryCardProps) {
+export default function StoryCard({ story, onClick, onUpvote, onDownvote, onComment, currentUserId }: StoryCardProps) {
   const category = CATEGORIES.find(c => c.value === story.category);
   const emotion = EMOTIONS.find(e => e.value === story.emotion);
+  const hasUpvoted = currentUserId && story.upvotedBy?.includes(currentUserId);
+  const hasDownvoted = currentUserId && story.downvotedBy?.includes(currentUserId);
 
   return (
     <Card 
@@ -46,14 +52,46 @@ export default function StoryCard({ story, onClick }: StoryCardProps) {
         </p>
         
         <div className="flex items-center justify-between pt-2 border-t border-border/30">
-          <div className="flex items-center gap-4 text-[11px] text-muted font-bold uppercase tracking-wider">
-            <span className="flex items-center gap-1.5 hover:text-secondary transition-colors">
-              <Heart className="w-4 h-4" /> {story.likesCount}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Clock className="w-4 h-4" /> {formatDistanceToNow(story.createdAt)} ago
-            </span>
+          <div className="flex items-center gap-2 text-[11px] text-muted font-bold uppercase tracking-wider">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                onUpvote?.(story.id);
+              }}
+              className={`flex items-center gap-1 transition-colors p-1.5 rounded-md ${
+                hasUpvoted 
+                  ? 'text-green-600 bg-green-50' 
+                  : 'hover:text-green-600 hover:bg-green-50'
+              }`}
+            >
+              <ThumbsUp className="w-4 h-4" /> {story.upvotedBy?.length || 0}
+            </button>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                onDownvote?.(story.id);
+              }}
+              className={`flex items-center gap-1 transition-colors p-1.5 rounded-md ${
+                hasDownvoted 
+                  ? 'text-red-600 bg-red-50' 
+                  : 'hover:text-red-600 hover:bg-red-50'
+              }`}
+            >
+              <ThumbsDown className="w-4 h-4" /> {story.downvotedBy?.length || 0}
+            </button>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                onComment?.(story.id);
+              }}
+              className="flex items-center gap-1 hover:text-blue-600 transition-colors p-1.5 hover:bg-blue-50 rounded-md ml-1"
+            >
+              <MessageCircle className="w-4 h-4" /> {story.comments?.length || 0}
+            </button>
           </div>
+          <span className="text-[10px] text-muted font-bold uppercase tracking-wider">
+            {formatDistanceToNow(story.createdAt)} ago
+          </span>
         </div>
         
         <div className="flex items-center gap-2 pt-1">

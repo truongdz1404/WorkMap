@@ -2,19 +2,39 @@ import { Story } from '../types';
 import { CATEGORIES, EMOTIONS } from '../constants';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { X, Heart, Share2, MapPin, Clock, User, ArrowLeft } from 'lucide-react';
+import { X, ThumbsUp, ThumbsDown, Share2, MapPin, Clock, User, ArrowLeft, MessageCircle, Send } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { motion, AnimatePresence } from 'motion/react';
+import { useState } from 'react';
+import { Textarea } from './ui/textarea';
 
 interface StoryDetailProps {
   story: Story;
   onClose: () => void;
-  onLike: (storyId: string) => void;
+  onUpvote: (storyId: string) => void;
+  onDownvote: (storyId: string) => void;
+  onAddComment?: (storyId: string, content: string) => void;
+  currentUserId?: string;
 }
 
-export default function StoryDetail({ story, onClose, onLike }: StoryDetailProps) {
+export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAddComment, currentUserId }: StoryDetailProps) {
   const category = CATEGORIES.find(c => c.value === story.category);
   const emotion = EMOTIONS.find(e => e.value === story.emotion);
+  const [commentText, setCommentText] = useState('');
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const hasUpvoted = currentUserId && story.upvotedBy?.includes(currentUserId);
+  const hasDownvoted = currentUserId && story.downvotedBy?.includes(currentUserId);
+
+  const handleAddComment = async () => {
+    if (!commentText.trim() || !onAddComment) return;
+    setIsSubmittingComment(true);
+    try {
+      await onAddComment(story.id, commentText);
+      setCommentText('');
+    } finally {
+      setIsSubmittingComment(false);
+    }
+  };
 
   return (
     <motion.div 
@@ -29,8 +49,29 @@ export default function StoryDetail({ story, onClose, onLike }: StoryDetailProps
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="rounded-full gap-2 text-[10px] font-black uppercase tracking-widest border-border" onClick={() => onLike(story.id)}>
-            <Heart className="w-4 h-4 text-secondary" /> {story.likesCount}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className={`rounded-full gap-2 text-[10px] font-black uppercase tracking-widest border-border ${
+              hasUpvoted 
+                ? 'bg-green-50 text-green-600 border-green-200' 
+                : 'hover:bg-green-50 hover:text-green-600'
+            }`} 
+            onClick={() => onUpvote(story.id)}
+          >
+            <ThumbsUp className="w-4 h-4" /> {story.upvotedBy?.length || 0}
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className={`rounded-full gap-2 text-[10px] font-black uppercase tracking-widest border-border ${
+              hasDownvoted 
+                ? 'bg-red-50 text-red-600 border-red-200' 
+                : 'hover:bg-red-50 hover:text-red-600'
+            }`} 
+            onClick={() => onDownvote(story.id)}
+          >
+            <ThumbsDown className="w-4 h-4" /> {story.downvotedBy?.length || 0}
           </Button>
           <Button variant="outline" size="sm" className="rounded-full gap-2 text-[10px] font-black uppercase tracking-widest border-border">
             <Share2 className="w-4 h-4 text-primary" /> Share
@@ -99,6 +140,62 @@ export default function StoryDetail({ story, onClose, onLike }: StoryDetailProps
           <p className="text-sm font-bold text-muted">
             Coordinates: {story.latitude.toFixed(4)}, {story.longitude.toFixed(4)}
           </p>
+        </div>
+
+        {story.comments && story.comments.length > 0 && (
+          <div className="mt-16 space-y-4">
+            <div className="flex items-center gap-2">
+              <MessageCircle className="w-5 h-5 text-primary" />
+              <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">Comments ({story.comments.length})</h3>
+            </div>
+            <div className="space-y-4">
+              {story.comments.map((comment) => (
+                <div key={comment.id} className="p-4 bg-accent/30 rounded-lg border border-border/50">
+                  <div className="flex items-center gap-2 mb-2">
+                    {comment.authorImage ? (
+                      <img src={comment.authorImage} alt={comment.authorName} className="w-6 h-6 rounded-full border border-border object-cover" referrerPolicy="no-referrer" />
+                    ) : (
+                      <div className="w-6 h-6 rounded-full bg-accent border border-border flex items-center justify-center">
+                        <User className="w-3 h-3 text-muted" />
+                      </div>
+                    )}
+                    <span className="text-xs font-bold text-foreground">{comment.authorName}</span>
+                    <span className="text-[9px] text-muted ml-auto">{formatDistanceToNow(comment.createdAt)} ago</span>
+                  </div>
+                  <p className="text-sm text-foreground/80">{comment.content}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="mt-12 p-6 bg-accent/20 rounded-2xl border border-border/50">
+          <div className="flex items-center gap-2 mb-4">
+            <MessageCircle className="w-5 h-5 text-primary" />
+            <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">Add a Comment</h3>
+          </div>
+          <div className="space-y-3">
+            <Textarea 
+              placeholder="Share your thoughts..." 
+              className="min-h-[80px] bg-white border-border focus-visible:ring-primary p-3"
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              maxLength={500}
+            />
+            <div className="flex items-center justify-between">
+              <p className="text-[9px] text-muted font-bold uppercase tracking-widest">
+                {commentText.length} / 500 characters
+              </p>
+              <Button 
+                onClick={handleAddComment}
+                disabled={!commentText.trim() || isSubmittingComment}
+                className="rounded-full gap-2 text-[10px] font-black uppercase tracking-widest bg-primary hover:bg-primary/90"
+              >
+                <Send className="w-3 h-3" /> 
+                {isSubmittingComment ? 'Posting...' : 'Comment'}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </motion.div>

@@ -12,10 +12,14 @@ interface SidebarProps {
   onSelectStory: (story: Story) => void;
   onFilterChange: (category: Category | 'all') => void;
   selectedCategory: Category | 'all';
+  currentUserId?: string;
+  onUpvote?: (storyId: string) => void;
+  onDownvote?: (storyId: string) => void;
+  onComment?: (storyId: string) => void;
   onSeedData?: () => void;
 }
 
-export default function Sidebar({ stories, onSelectStory, onFilterChange, selectedCategory, onSeedData }: SidebarProps) {
+export default function Sidebar({ stories, onSelectStory, onFilterChange, selectedCategory, currentUserId, onUpvote, onDownvote, onComment, onSeedData }: SidebarProps) {
   const [search, setSearch] = useState('');
 
   const filteredStories = stories.filter(s => {
@@ -97,7 +101,11 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
               <StoryCard 
                 key={story.id} 
                 story={story} 
-                onClick={() => onSelectStory(story)} 
+                onClick={() => onSelectStory(story)}
+                onUpvote={onUpvote}
+                onDownvote={onDownvote}
+                onComment={onComment}
+                currentUserId={currentUserId}
               />
             ))
           ) : (

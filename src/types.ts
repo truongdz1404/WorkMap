@@ -1,6 +1,15 @@
 export type Category = 'conflict' | 'communication' | 'onboarding' | 'culture' | 'technical' | 'other';
 export type Emotion = 'stress' | 'confusion' | 'success' | 'happy' | 'neutral' | 'frustrated';
 
+export interface Comment {
+  id: string;
+  authorId: string;
+  authorName: string;
+  authorImage?: string;
+  content: string;
+  createdAt: number;
+}
+
 export interface Story {
   id: string;
   title: string;
@@ -10,10 +19,12 @@ export interface Story {
   latitude: number;
   longitude: number;
   createdAt: number;
-  likesCount: number;
+  upvotedBy: string[];
+  downvotedBy: string[];
   authorId?: string;
   authorName?: string;
   authorImage?: string;
+  comments?: Comment[];
 }
 
 export interface UserProfile {

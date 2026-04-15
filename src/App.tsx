@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { auth, db, loginWithGoogle, logout, collection, addDoc, onSnapshot, query, orderBy, updateDoc, doc, increment } from './firebase';
+import { auth, db, loginWithGoogle, logout, collection, addDoc, onSnapshot, query, orderBy, updateDoc, doc, arrayUnion, arrayRemove } from './firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { Story, Category } from './types';
 import Map from './components/Map';
@@ -53,6 +53,16 @@ export default function App() {
     }
   }, [error]);
 
+  // Update selectedStory when stories change (for realtime updates)
+  useEffect(() => {
+    if (selectedStory) {
+      const updatedStory = stories.find(s => s.id === selectedStory.id);
+      if (updatedStory) {
+        setSelectedStory(updatedStory);
+      }
+    }
+  }, [stories]);
+
   const handleMapClick = async (lat: number, lng: number) => {
     // Check if user is logged in
     if (!user) {
@@ -105,10 +115,12 @@ export default function App() {
       await addDoc(collection(db, 'stories'), {
         ...data,
         createdAt: Date.now(),
-        likesCount: 0,
+        upvotedBy: [],
+        downvotedBy: [],
         authorId: user?.uid || null,
         authorName: user?.displayName || 'Anonymous',
         authorImage: user?.photoURL || undefined,
+        comments: [],
       });
       setIsAddingStory(false);
       setClickCoords(null);
@@ -120,14 +132,78 @@ export default function App() {
     }
   };
 
-  const handleLike = async (storyId: string) => {
+  const handleUpvote = async (storyId: string) => {
+    if (!user) {
+      setError("Please login to vote");
+      return;
+    }
     try {
       const storyRef = doc(db, 'stories', storyId);
+      const story = stories.find(s => s.id === storyId);
+      
+      // Nếu đã upvote thì unvote, không thì upvote
+      if (story?.upvotedBy?.includes(user.uid)) {
+        await updateDoc(storyRef, {
+          upvotedBy: arrayRemove(user.uid)
+        });
+      } else {
+        await updateDoc(storyRef, {
+          upvotedBy: arrayUnion(user.uid),
+          downvotedBy: arrayRemove(user.uid)
+        });
+      }
+    } catch (err) {
+      console.error("Error upvoting story:", err);
+    }
+  };
+
+  const handleDownvote = async (storyId: string) => {
+    if (!user) {
+      setError("Please login to vote");
+      return;
+    }
+    try {
+      const storyRef = doc(db, 'stories', storyId);
+      const story = stories.find(s => s.id === storyId);
+      
+      // Nếu đã downvote thì unvote, không thì downvote
+      if (story?.downvotedBy?.includes(user.uid)) {
+        await updateDoc(storyRef, {
+          downvotedBy: arrayRemove(user.uid)
+        });
+      } else {
+        await updateDoc(storyRef, {
+          downvotedBy: arrayUnion(user.uid),
+          upvotedBy: arrayRemove(user.uid)
+        });
+      }
+    } catch (err) {
+      console.error("Error downvoting story:", err);
+    }
+  };
+
+  const handleAddComment = async (storyId: string, commentText: string) => {
+    if (!user) {
+      setError("Please login to comment");
+      return;
+    }
+    try {
+      const commentId = Date.now().toString();
+      const newComment = {
+        id: commentId,
+        authorId: user.uid,
+        authorName: user.displayName || 'Anonymous',
+        authorImage: user.photoURL || undefined,
+        content: commentText,
+        createdAt: Date.now(),
+      };
+      const storyRef = doc(db, 'stories', storyId);
       await updateDoc(storyRef, {
-        likesCount: increment(1)
+        comments: arrayUnion(newComment)
       });
     } catch (err) {
-      console.error("Error liking story:", err);
+      console.error("Error adding comment:", err);
+      setError("Failed to add comment");
     }
   };
 
@@ -141,8 +217,10 @@ export default function App() {
         latitude: 10.7626,
         longitude: 106.6602, // Ho Chi Minh City
         createdAt: Date.now() - 86400000,
-        likesCount: 12,
+        upvotedBy: [],
+        downvotedBy: [],
         authorName: "Minh Thu",
+        comments: [],
       },
       {
         title: "First day onboarding success",
@@ -152,8 +230,10 @@ export default function App() {
         latitude: 21.0285,
         longitude: 105.8542, // Hanoi
         createdAt: Date.now() - 172800000,
-        likesCount: 25,
+        upvotedBy: [],
+        downvotedBy: [],
         authorName: "Hoang Nam",
+        comments: [],
       },
       {
         title: "Navigating office politics",
@@ -163,8 +243,10 @@ export default function App() {
         latitude: 16.0544,
         longitude: 108.2022, // Da Nang
         createdAt: Date.now() - 259200000,
-        likesCount: 8,
+        upvotedBy: [],
+        downvotedBy: [],
         authorName: "Anh Tuan",
+        comments: [],
       }
     ];
 
@@ -224,7 +306,10 @@ export default function App() {
             <StoryDetail
               story={selectedStory}
               onClose={() => setSelectedStory(null)}
-              onLike={handleLike}
+              onUpvote={handleUpvote}
+              onDownvote={handleDownvote}
+              onAddComment={handleAddComment}
+              currentUserId={user?.uid}
             />
           )}
         </AnimatePresence>
@@ -235,6 +320,9 @@ export default function App() {
         onSelectStory={setSelectedStory}
         onFilterChange={setSelectedCategory}
         selectedCategory={selectedCategory}
+        currentUserId={user?.uid}
+        onUpvote={handleUpvote}
+        onDownvote={handleDownvote}
         onSeedData={handleSeedData}
       />
     </div>

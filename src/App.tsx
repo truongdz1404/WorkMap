@@ -43,15 +43,59 @@ export default function App() {
     };
   }, []);
 
-  const handleMapClick = (lat: number, lng: number) => {
-    setClickCoords({ lat, lng });
-    setIsAddingStory(true);
+  // Auto dismiss error after 4 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
+  const handleMapClick = async (lat: number, lng: number) => {
+    // Check if user is logged in
+    if (!user) {
+      try {
+        // Login with Google first
+        await loginWithGoogle();
+        // After login, the user state will be updated automatically
+        setTimeout(() => {
+          setClickCoords({ lat, lng });
+          setIsAddingStory(true);
+        }, 500);
+      } catch (err) {
+        console.error("Login cancelled or failed:", err);
+        setError("Login cancelled. Please try again.");
+      }
+    } else {
+      // User is already logged in, show dialog immediately
+      setClickCoords({ lat, lng });
+      setIsAddingStory(true);
+    }
   };
 
-  const handleAddStory = () => {
-    // Default to center of Vietnam if no click
-    setClickCoords({ lat: 14.0583, lng: 108.2772 });
-    setIsAddingStory(true);
+  const handleAddStory = async () => {
+    // Check if user is logged in
+    if (!user) {
+      try {
+        // Login with Google first
+        await loginWithGoogle();
+        // After login, the user state will be updated automatically by onAuthStateChanged
+        // Then show the dialog after a short delay to ensure user state is updated
+        setTimeout(() => {
+          setClickCoords({ lat: 14.0583, lng: 108.2772 });
+          setIsAddingStory(true);
+        }, 500);
+      } catch (err) {
+        console.error("Login cancelled or failed:", err);
+        setError("Login cancelled. Please try again.");
+      }
+    } else {
+      // User is already logged in, show dialog immediately
+      setClickCoords({ lat: 14.0583, lng: 108.2772 });
+      setIsAddingStory(true);
+    }
   };
 
   const handleSubmitStory = async (data: any) => {
@@ -135,10 +179,10 @@ export default function App() {
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-background font-sans">
       <main className="flex-1 relative order-1">
-        <Navbar 
-          user={user} 
-          onLogin={loginWithGoogle} 
-          onLogout={logout} 
+        <Navbar
+          user={user}
+          onLogin={loginWithGoogle}
+          onLogout={logout}
           onAddStory={handleAddStory}
         />
 
@@ -148,22 +192,22 @@ export default function App() {
           </div>
         )}
 
-        <Map 
-          stories={stories} 
-          onSelectStory={setSelectedStory} 
+        <Map
+          stories={stories}
+          onSelectStory={setSelectedStory}
           onMapClick={handleMapClick}
           selectedStoryId={selectedStory?.id}
         />
 
         <AnimatePresence>
           {isAddingStory && clickCoords && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               className="absolute inset-0 z-40 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm"
             >
-              <StoryForm 
+              <StoryForm
                 latitude={clickCoords.lat}
                 longitude={clickCoords.lng}
                 onSubmit={handleSubmitStory}
@@ -176,8 +220,8 @@ export default function App() {
 
         <AnimatePresence>
           {selectedStory && (
-            <StoryDetail 
-              story={selectedStory} 
+            <StoryDetail
+              story={selectedStory}
               onClose={() => setSelectedStory(null)}
               onLike={handleLike}
             />
@@ -185,8 +229,8 @@ export default function App() {
         </AnimatePresence>
       </main>
 
-      <Sidebar 
-        stories={stories} 
+      <Sidebar
+        stories={stories}
         onSelectStory={setSelectedStory}
         onFilterChange={setSelectedCategory}
         selectedCategory={selectedCategory}

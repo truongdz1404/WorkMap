@@ -24,8 +24,8 @@ export default function StoryCard({ story, onClick }: StoryCardProps) {
         <div className="flex justify-between items-start gap-3 mb-3">
           <Badge 
             variant="outline" 
-            className="text-[10px] uppercase font-black tracking-widest px-3 py-1 flex-shrink-0"
-            style={{ borderColor: category?.color, color: category?.color, backgroundColor: `${category?.color}15` }}
+            className="text-[10px] uppercase font-black tracking-widest px-3 py-1 flex-shrink-0 !text-foreground"
+            style={{ borderColor: category?.color, backgroundColor: `${category?.color}15` }}
           >
             {category?.label}
           </Badge>

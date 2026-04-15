@@ -43,8 +43,8 @@ export default function StoryDetail({ story, onClose, onLike }: StoryDetailProps
           <div className="flex items-center gap-3 mb-6">
             <Badge 
               variant="outline" 
-              className="text-[9px] uppercase font-black tracking-widest px-3 py-1"
-              style={{ borderColor: category?.color, color: category?.color, backgroundColor: `${category?.color}10` }}
+              className="text-[9px] uppercase font-black tracking-widest px-3 py-1 !text-foreground"
+              style={{ borderColor: category?.color, backgroundColor: `${category?.color}10` }}
             >
               {category?.label}
             </Badge>

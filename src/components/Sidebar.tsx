@@ -55,10 +55,10 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => onFilterChange('all')}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all ${
+              className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all border ${
                 selectedCategory === 'all' 
-                  ? 'bg-primary text-white shadow-md' 
-                  : 'bg-background text-muted hover:bg-accent border border-border'
+                  ? 'bg-primary text-white shadow-md border-transparent' 
+                  : 'bg-white text-foreground hover:bg-accent border-border hover:border-primary/30'
               }`}
             >
               All
@@ -69,8 +69,8 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
                 onClick={() => onFilterChange(cat.value)}
                 className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all border ${
                   selectedCategory === cat.value 
-                    ? 'shadow-md text-white border-transparent' 
-                    : 'bg-background text-muted hover:bg-accent border-border'
+                    ? '!text-white shadow-md border-transparent' 
+                    : 'bg-white text-foreground hover:bg-accent/30 border-border'
                 }`}
                 style={{ backgroundColor: selectedCategory === cat.value ? cat.color : undefined }}
               >

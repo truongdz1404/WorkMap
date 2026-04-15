@@ -22,14 +22,14 @@ export default function StoryCard({ story, onClick, onUpvote, onDownvote, onComm
   const hasDownvoted = currentUserId && story.downvotedBy?.includes(currentUserId);
 
   return (
-    <Card 
+    <Card
       className="cursor-pointer hover:shadow-lg transition-all border border-border/50 bg-white hover:border-primary/50 group rounded-2xl overflow-hidden"
       onClick={onClick}
     >
       <CardHeader className="p-6 pb-3">
         <div className="flex justify-between items-start gap-3 mb-3">
-          <Badge 
-            variant="outline" 
+          <Badge
+            variant="outline"
             className="text-[10px] uppercase font-black tracking-widest px-3 py-1 flex-shrink-0 !text-foreground"
             style={{ borderColor: category?.color, backgroundColor: `${category?.color}15` }}
           >
@@ -50,50 +50,42 @@ export default function StoryCard({ story, onClick, onUpvote, onDownvote, onComm
         <p className="text-sm text-foreground/70 leading-relaxed line-clamp-2">
           {story.content}
         </p>
-        
+
         <div className="flex items-center justify-between pt-2 border-t border-border/30">
           <div className="flex items-center gap-2 text-[11px] text-muted font-bold uppercase tracking-wider">
-            <button 
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 onUpvote?.(story.id);
               }}
-              className={`flex items-center gap-1 transition-colors p-1.5 rounded-md ${
-                hasUpvoted 
-                  ? 'text-green-600 bg-green-50' 
-                  : 'hover:text-green-600 hover:bg-green-50'
-              }`}
+              className="flex items-center gap-1 transition-colors p-1.5 rounded-md"
             >
-              <ThumbsUp className="w-4 h-4" /> {story.upvotedBy?.length || 0}
+              <ThumbsUp className={`w-4 h-4 transition-colors ${hasUpvoted ? 'text-green-600' : 'text-gray-400'}`} /> {story.upvotedBy?.length || 0}
             </button>
-            <button 
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 onDownvote?.(story.id);
               }}
-              className={`flex items-center gap-1 transition-colors p-1.5 rounded-md ${
-                hasDownvoted 
-                  ? 'text-red-600 bg-red-50' 
-                  : 'hover:text-red-600 hover:bg-red-50'
-              }`}
+              className="flex items-center gap-1 transition-colors p-1.5 rounded-md"
             >
-              <ThumbsDown className="w-4 h-4" /> {story.downvotedBy?.length || 0}
+              <ThumbsDown className={`w-4 h-4 transition-colors ${hasDownvoted ? 'text-red-600' : 'text-gray-400'}`} /> {story.downvotedBy?.length || 0}
             </button>
-            <button 
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 onComment?.(story.id);
               }}
-              className="flex items-center gap-1 hover:text-blue-600 transition-colors p-1.5 hover:bg-blue-50 rounded-md ml-1"
+              className="flex items-center gap-1 transition-colors p-1.5 rounded-md ml-1 group"
             >
-              <MessageCircle className="w-4 h-4" /> {story.comments?.length || 0}
+              <MessageCircle className="w-4 h-4 transition-colors text-gray-400 group-hover:text-blue-600" /> {story.comments?.length || 0}
             </button>
           </div>
           <span className="text-[10px] text-muted font-bold uppercase tracking-wider">
             {formatDistanceToNow(story.createdAt)} ago
           </span>
         </div>
-        
+
         <div className="flex items-center gap-2 pt-1">
           {story.authorImage ? (
             <img src={story.authorImage} alt={story.authorName} className="w-5 h-5 rounded-full border border-border/50 object-cover" referrerPolicy="no-referrer" />

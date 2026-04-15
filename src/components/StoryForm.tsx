@@ -50,8 +50,8 @@ export default function StoryForm({ latitude, longitude, onSubmit, onClose, isSu
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
           <label className="text-[10px] font-black text-muted uppercase tracking-widest">Title</label>
-          <Input 
-            placeholder="A short, catchy title" 
+          <Input
+            placeholder="A short, catchy title"
             className="bg-accent/30 border-border focus-visible:ring-primary h-11 font-bold"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -84,11 +84,10 @@ export default function StoryForm({ latitude, longitude, onSubmit, onClose, isSu
                 key={emo.value}
                 type="button"
                 onClick={() => setEmotion(emotion === emo.value ? 'none' : emo.value)}
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${
-                  emotion === emo.value 
-                    ? 'border-primary bg-primary/15 shadow-md' 
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${emotion === emo.value
+                    ? 'border-primary bg-primary/15 shadow-md'
                     : 'border-border bg-white hover:border-primary/30 hover:bg-accent/30'
-                }`}
+                  }`}
               >
                 <span className="text-2xl mb-1">{emo.icon}</span>
                 <span className="text-[8px] font-black tracking-widest text-foreground leading-tight">{emo.label}</span>
@@ -99,8 +98,8 @@ export default function StoryForm({ latitude, longitude, onSubmit, onClose, isSu
 
         <div className="space-y-2">
           <label className="text-[10px] font-black text-muted uppercase tracking-widest">Your Story</label>
-          <Textarea 
-            placeholder="What happened? How did you handle it?" 
+          <Textarea
+            placeholder="What happened? How did you handle it?"
             className="min-h-[150px] bg-accent/30 border-border focus-visible:ring-primary p-4 leading-relaxed"
             value={content}
             onChange={(e) => setContent(e.target.value)}

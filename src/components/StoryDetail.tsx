@@ -37,7 +37,7 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ x: '100%' }}
       animate={{ x: 0 }}
       exit={{ x: '100%' }}
@@ -49,29 +49,21 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className={`rounded-full gap-2 text-[10px] font-black uppercase tracking-widest border-border ${
-              hasUpvoted 
-                ? 'bg-green-50 text-green-600 border-green-200' 
-                : 'hover:bg-green-50 hover:text-green-600'
-            }`} 
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-full gap-2 text-[10px] font-black uppercase tracking-widest border-border"
             onClick={() => onUpvote(story.id)}
           >
-            <ThumbsUp className="w-4 h-4" /> {story.upvotedBy?.length || 0}
+            <ThumbsUp className={`w-4 h-4 transition-colors ${hasUpvoted ? 'text-green-600' : 'text-gray-400'}`} /> {story.upvotedBy?.length || 0}
           </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className={`rounded-full gap-2 text-[10px] font-black uppercase tracking-widest border-border ${
-              hasDownvoted 
-                ? 'bg-red-50 text-red-600 border-red-200' 
-                : 'hover:bg-red-50 hover:text-red-600'
-            }`} 
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-full gap-2 text-[10px] font-black uppercase tracking-widest border-border"
             onClick={() => onDownvote(story.id)}
           >
-            <ThumbsDown className="w-4 h-4" /> {story.downvotedBy?.length || 0}
+            <ThumbsDown className={`w-4 h-4 transition-colors ${hasDownvoted ? 'text-red-600' : 'text-gray-400'}`} /> {story.downvotedBy?.length || 0}
           </Button>
           <Button variant="outline" size="sm" className="rounded-full gap-2 text-[10px] font-black uppercase tracking-widest border-border">
             <Share2 className="w-4 h-4 text-primary" /> Share
@@ -82,8 +74,8 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
       <div className="flex-1 overflow-y-auto p-10">
         <div className="mb-10">
           <div className="flex items-center gap-3 mb-6">
-            <Badge 
-              variant="outline" 
+            <Badge
+              variant="outline"
               className="text-[9px] uppercase font-black tracking-widest px-3 py-1 !text-foreground"
               style={{ borderColor: category?.color, backgroundColor: `${category?.color}10` }}
             >
@@ -99,7 +91,7 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
           <h1 className="text-4xl font-serif font-bold text-foreground leading-tight mb-8">
             {story.title}
           </h1>
-          
+
           <div className="grid grid-cols-2 gap-6 py-8 border-y border-border">
             <div className="flex items-center gap-3">
               {story.authorImage ? (
@@ -175,8 +167,8 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
             <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">Add a Comment</h3>
           </div>
           <div className="space-y-3">
-            <Textarea 
-              placeholder="Share your thoughts..." 
+            <Textarea
+              placeholder="Share your thoughts..."
               className="min-h-[80px] bg-white border-border focus-visible:ring-primary p-3"
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
@@ -186,12 +178,12 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
               <p className="text-[9px] text-muted font-bold uppercase tracking-widest">
                 {commentText.length} / 500 characters
               </p>
-              <Button 
+              <Button
                 onClick={handleAddComment}
                 disabled={!commentText.trim() || isSubmittingComment}
                 className="rounded-full gap-2 text-[10px] font-black uppercase tracking-widest bg-primary hover:bg-primary/90"
               >
-                <Send className="w-3 h-3" /> 
+                <Send className="w-3 h-3" />
                 {isSubmittingComment ? 'Posting...' : 'Comment'}
               </Button>
             </div>

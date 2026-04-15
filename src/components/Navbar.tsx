@@ -1,6 +1,6 @@
 import { User } from 'firebase/auth';
 import { Button } from './ui/button';
-import { LogIn, LogOut, User as UserIcon, Plus } from 'lucide-react';
+import { LogIn, LogOut, User as UserIcon, Plus, MapPin } from 'lucide-react';
 
 interface NavbarProps {
   user: User | null;
@@ -13,7 +13,12 @@ export default function Navbar({ user, onLogin, onLogout, onAddStory }: NavbarPr
   return (
     <div className="absolute top-8 left-8 z-20 flex items-center gap-4">
       <div className="flex items-center gap-6 bg-white/90 backdrop-blur-md px-6 py-2 rounded-full shadow-lg border border-border">
-        <div className="font-serif font-bold text-lg text-primary tracking-tight">WorkMap</div>
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center shadow-md">
+            <MapPin className="w-5 h-5 text-white" />
+          </div>
+          <div className="font-serif font-bold text-lg text-primary tracking-tight">WorkMap</div>
+        </div>
         <div className="hidden md:flex items-center gap-4 text-[11px] font-bold uppercase tracking-widest text-muted">
           <span className="text-primary underline underline-offset-4 cursor-pointer">Explore Map</span>
           <span className="hover:text-primary cursor-pointer transition-colors">Insights</span>
@@ -21,7 +26,7 @@ export default function Navbar({ user, onLogin, onLogout, onAddStory }: NavbarPr
         </div>
       </div>
 
-      <Button 
+      <Button
         onClick={onAddStory}
         className="rounded-full shadow-lg bg-primary hover:bg-primary/90 px-6 font-bold h-11 text-xs uppercase tracking-widest"
       >
@@ -46,8 +51,8 @@ export default function Navbar({ user, onLogin, onLogout, onAddStory }: NavbarPr
           </Button>
         </div>
       ) : (
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={onLogin}
           className="rounded-full shadow-lg bg-white border-border px-6 font-bold h-11 text-xs uppercase tracking-widest hover:bg-accent"
         >

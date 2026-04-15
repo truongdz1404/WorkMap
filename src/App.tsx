@@ -115,9 +115,10 @@ export default function App() {
       await addDoc(collection(db, 'stories'), {
         ...data,
         createdAt: Date.now(),
+        likesCount: 0,
         upvotedBy: [],
         downvotedBy: [],
-        authorId: user?.uid || null,
+        ...(user ? { authorId: user.uid } : {}),
         authorName: user?.displayName || 'Anonymous',
         authorImage: user?.photoURL || undefined,
         comments: [],
@@ -140,7 +141,7 @@ export default function App() {
     try {
       const storyRef = doc(db, 'stories', storyId);
       const story = stories.find(s => s.id === storyId);
-      
+
       // Nếu đã upvote thì unvote, không thì upvote
       if (story?.upvotedBy?.includes(user.uid)) {
         await updateDoc(storyRef, {
@@ -165,7 +166,7 @@ export default function App() {
     try {
       const storyRef = doc(db, 'stories', storyId);
       const story = stories.find(s => s.id === storyId);
-      
+
       // Nếu đã downvote thì unvote, không thì downvote
       if (story?.downvotedBy?.includes(user.uid)) {
         await updateDoc(storyRef, {

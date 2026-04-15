@@ -24,8 +24,8 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
 
   const filteredStories = stories.filter(s => {
     const matchesCategory = selectedCategory === 'all' || s.category === selectedCategory;
-    const matchesSearch = s.title.toLowerCase().includes(search.toLowerCase()) || 
-                         s.content.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = s.title.toLowerCase().includes(search.toLowerCase()) ||
+      s.content.toLowerCase().includes(search.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -44,8 +44,8 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
 
         <div className="relative mb-6">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
-          <Input 
-            placeholder="Search stories..." 
+          <Input
+            placeholder="Search stories..."
             className="pl-10 bg-background border-border focus-visible:ring-primary"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -59,11 +59,10 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => onFilterChange('all')}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all border ${
-                selectedCategory === 'all' 
-                  ? 'bg-primary text-white shadow-md border-transparent' 
+              className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all border ${selectedCategory === 'all'
+                  ? 'bg-primary text-white shadow-md border-transparent'
                   : 'bg-white text-foreground hover:bg-accent border-border hover:border-primary/30'
-              }`}
+                }`}
             >
               All
             </button>
@@ -71,11 +70,10 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
               <button
                 key={cat.value}
                 onClick={() => onFilterChange(cat.value)}
-                className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all border ${
-                  selectedCategory === cat.value 
-                    ? '!text-white shadow-md border-transparent' 
+                className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all border ${selectedCategory === cat.value
+                    ? '!text-white shadow-md border-transparent'
                     : 'bg-white text-foreground hover:bg-accent/30 border-border'
-                }`}
+                  }`}
                 style={{ backgroundColor: selectedCategory === cat.value ? cat.color : undefined }}
               >
                 {cat.label}
@@ -95,12 +93,12 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
               {filteredStories.length}
             </span>
           </div>
-          
+
           {filteredStories.length > 0 ? (
             filteredStories.map((story) => (
-              <StoryCard 
-                key={story.id} 
-                story={story} 
+              <StoryCard
+                key={story.id}
+                story={story}
                 onClick={() => onSelectStory(story)}
                 onUpvote={onUpvote}
                 onDownvote={onDownvote}

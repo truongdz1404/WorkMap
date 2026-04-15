@@ -1,0 +1,44 @@
+{
+  "entities": {
+    "Story": {
+      "title": "Story",
+      "description": "A workplace story shared by a user.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the story" },
+        "content": { "type": "string", "description": "The story content" },
+        "category": { "type": "string", "description": "Category of the problem" },
+        "emotion": { "type": "string", "description": "Emotion associated with the story" },
+        "latitude": { "type": "number", "description": "Latitude of the location" },
+        "longitude": { "type": "number", "description": "Longitude of the location" },
+        "createdAt": { "type": "number", "description": "Timestamp of creation" },
+        "likesCount": { "type": "number", "description": "Number of likes" },
+        "authorId": { "type": "string", "description": "UID of the author (optional)" },
+        "authorName": { "type": "string", "description": "Name of the author (optional)" }
+      },
+      "required": ["title", "content", "category", "latitude", "longitude", "createdAt", "likesCount"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Public profile information for a user.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "email": { "type": "string" }
+      },
+      "required": ["uid", "displayName", "email"]
+    }
+  },
+  "firestore": {
+    "/stories/{storyId}": {
+      "schema": "Story",
+      "description": "Collection of workplace stories."
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Private user profile data."
+    }
+  }
+}

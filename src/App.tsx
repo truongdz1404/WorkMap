@@ -1,0 +1,197 @@
+import { useState, useEffect } from 'react';
+import { auth, db, loginWithGoogle, logout, collection, addDoc, onSnapshot, query, orderBy, updateDoc, doc, increment } from './firebase';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { Story, Category } from './types';
+import Map from './components/Map';
+import Sidebar from './components/Sidebar';
+import StoryForm from './components/StoryForm';
+import StoryDetail from './components/StoryDetail';
+import Navbar from './components/Navbar';
+import { AnimatePresence, motion } from 'motion/react';
+import { AlertCircle } from 'lucide-react';
+
+export default function App() {
+  const [user, setUser] = useState<User | null>(null);
+  const [stories, setStories] = useState<Story[]>([]);
+  const [selectedStory, setSelectedStory] = useState<Story | null>(null);
+  const [isAddingStory, setIsAddingStory] = useState(false);
+  const [clickCoords, setClickCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+
+    const q = query(collection(db, 'stories'), orderBy('createdAt', 'desc'));
+    const unsubscribeStories = onSnapshot(q, (snapshot) => {
+      const storyData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Story[];
+      setStories(storyData);
+    }, (err) => {
+      console.error("Firestore error:", err);
+      setError("Failed to load stories. Please check your connection.");
+    });
+
+    return () => {
+      unsubscribeAuth();
+      unsubscribeStories();
+    };
+  }, []);
+
+  const handleMapClick = (lat: number, lng: number) => {
+    setClickCoords({ lat, lng });
+    setIsAddingStory(true);
+  };
+
+  const handleAddStory = () => {
+    // Default to center of Vietnam if no click
+    setClickCoords({ lat: 14.0583, lng: 108.2772 });
+    setIsAddingStory(true);
+  };
+
+  const handleSubmitStory = async (data: any) => {
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      await addDoc(collection(db, 'stories'), {
+        ...data,
+        createdAt: Date.now(),
+        likesCount: 0,
+        authorId: user?.uid || null,
+        authorName: user?.displayName || 'Anonymous',
+      });
+      setIsAddingStory(false);
+      setClickCoords(null);
+    } catch (err) {
+      console.error("Error adding story:", err);
+      setError("Failed to post story. You might need to sign in.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleLike = async (storyId: string) => {
+    try {
+      const storyRef = doc(db, 'stories', storyId);
+      await updateDoc(storyRef, {
+        likesCount: increment(1)
+      });
+    } catch (err) {
+      console.error("Error liking story:", err);
+    }
+  };
+
+  const handleSeedData = async () => {
+    const exampleStories = [
+      {
+        title: "Communication breakdown in remote team",
+        content: "Our team was struggling with async communication. We started using a shared document for daily updates and it cleared up so much confusion! The key was being explicit about expectations and deadlines.",
+        category: "communication",
+        emotion: "confusion",
+        latitude: 10.7626,
+        longitude: 106.6602, // Ho Chi Minh City
+        createdAt: Date.now() - 86400000,
+        likesCount: 12,
+        authorName: "Minh Thu",
+      },
+      {
+        title: "First day onboarding success",
+        content: "I was so nervous about my first day as an intern. But the team had a clear checklist and a buddy assigned to me. It made me feel welcome and productive from day one. Highly recommend this approach for all startups!",
+        category: "onboarding",
+        emotion: "success",
+        latitude: 21.0285,
+        longitude: 105.8542, // Hanoi
+        createdAt: Date.now() - 172800000,
+        likesCount: 25,
+        authorName: "Hoang Nam",
+      },
+      {
+        title: "Navigating office politics",
+        content: "Dealing with conflicting interests between departments was stressful. I learned that transparency and documentation are your best friends. Always keep a paper trail and try to understand the motivations of all stakeholders.",
+        category: "conflict",
+        emotion: "stress",
+        latitude: 16.0544,
+        longitude: 108.2022, // Da Nang
+        createdAt: Date.now() - 259200000,
+        likesCount: 8,
+        authorName: "Anh Tuan",
+      }
+    ];
+
+    try {
+      for (const story of exampleStories) {
+        await addDoc(collection(db, 'stories'), story);
+      }
+    } catch (err) {
+      console.error("Error seeding data:", err);
+    }
+  };
+
+  return (
+    <div className="flex h-screen w-screen overflow-hidden bg-background font-sans">
+      <main className="flex-1 relative order-1">
+        <Navbar 
+          user={user} 
+          onLogin={loginWithGoogle} 
+          onLogout={logout} 
+          onAddStory={handleAddStory}
+        />
+
+        {error && (
+          <div className="absolute top-24 left-1/2 -translate-x-1/2 z-30 bg-red-50 border border-red-100 text-red-600 px-4 py-2 rounded-full flex items-center gap-2 shadow-lg text-sm font-bold">
+            <AlertCircle className="w-4 h-4" /> {error}
+          </div>
+        )}
+
+        <Map 
+          stories={stories} 
+          onSelectStory={setSelectedStory} 
+          onMapClick={handleMapClick}
+          selectedStoryId={selectedStory?.id}
+        />
+
+        <AnimatePresence>
+          {isAddingStory && clickCoords && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="absolute inset-0 z-40 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm"
+            >
+              <StoryForm 
+                latitude={clickCoords.lat}
+                longitude={clickCoords.lng}
+                onSubmit={handleSubmitStory}
+                onClose={() => setIsAddingStory(false)}
+                isSubmitting={isSubmitting}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {selectedStory && (
+            <StoryDetail 
+              story={selectedStory} 
+              onClose={() => setSelectedStory(null)}
+              onLike={handleLike}
+            />
+          )}
+        </AnimatePresence>
+      </main>
+
+      <Sidebar 
+        stories={stories} 
+        onSelectStory={setSelectedStory}
+        onFilterChange={setSelectedCategory}
+        selectedCategory={selectedCategory}
+        onSeedData={handleSeedData}
+      />
+    </div>
+  );
+}

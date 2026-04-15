@@ -57,7 +57,7 @@ export default function Map({ stories, onSelectStory, onMapClick, selectedStoryI
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+   url="https://mt1.google.com/vt/lyrs=m&hl=vi&x={x}&y={y}&z={z}"
       />
       
       {stories.map((story) => (

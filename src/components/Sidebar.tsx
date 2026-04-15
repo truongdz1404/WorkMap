@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Story, Category } from '../types';
 import { CATEGORIES } from '../constants';
 import StoryCard from './StoryCard';
 import { Input } from './ui/input';
 import { ScrollArea } from './ui/scroll-area';
-import { Search, Filter, Map as MapIcon, List, Database } from 'lucide-react';
+import { Search, Filter, Map as MapIcon, List, Database, Loader } from 'lucide-react';
 import { Button } from './ui/button';
 
 interface SidebarProps {
@@ -17,10 +17,13 @@ interface SidebarProps {
   onDownvote?: (storyId: string) => void;
   onComment?: (storyId: string) => void;
   onSeedData?: () => void;
+  isLoadingMore?: boolean;
+  onLoadMore?: () => void;
 }
 
-export default function Sidebar({ stories, onSelectStory, onFilterChange, selectedCategory, currentUserId, onUpvote, onDownvote, onComment, onSeedData }: SidebarProps) {
+export default function Sidebar({ stories, onSelectStory, onFilterChange, selectedCategory, currentUserId, onUpvote, onDownvote, onComment, onSeedData, isLoadingMore, onLoadMore }: SidebarProps) {
   const [search, setSearch] = useState('');
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const filteredStories = stories.filter(s => {
     const matchesCategory = selectedCategory === 'all' || s.category === selectedCategory;
@@ -28,6 +31,24 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
       s.content.toLowerCase().includes(search.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  // Handle scroll to load more
+  useEffect(() => {
+    const handleScroll = (e: Event) => {
+      const scrollArea = e.target as HTMLDivElement;
+      const isNearBottom = scrollArea.scrollHeight - scrollArea.scrollTop - scrollArea.clientHeight < 200;
+      
+      if (isNearBottom && onLoadMore && !isLoadingMore) {
+        onLoadMore();
+      }
+    };
+
+    const scrollElement = scrollRef.current?.querySelector('[data-radix-scroll-area-viewport]');
+    if (scrollElement) {
+      scrollElement.addEventListener('scroll', handleScroll);
+      return () => scrollElement.removeEventListener('scroll', handleScroll);
+    }
+  }, [onLoadMore, isLoadingMore]);
 
   return (
     <div className="h-full flex flex-col bg-card border-l border-border w-full md:w-[340px] shadow-xl z-10 order-2">
@@ -83,7 +104,7 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
         </div>
       </div>
 
-      <ScrollArea className="flex-1 px-6">
+      <ScrollArea ref={scrollRef} className="flex-1 px-6">
         <div className="py-6 space-y-4">
           <div className="flex items-center justify-between mb-2 px-2">
             <h2 className="text-sm font-serif font-bold text-foreground flex items-center gap-2">
@@ -95,17 +116,28 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
           </div>
 
           {filteredStories.length > 0 ? (
-            filteredStories.map((story) => (
-              <StoryCard
-                key={story.id}
-                story={story}
-                onClick={() => onSelectStory(story)}
-                onUpvote={onUpvote}
-                onDownvote={onDownvote}
-                onComment={onComment}
-                currentUserId={currentUserId}
-              />
-            ))
+            <>
+              {filteredStories.map((story) => (
+                <StoryCard
+                  key={story.id}
+                  story={story}
+                  onClick={() => onSelectStory(story)}
+                  onUpvote={onUpvote}
+                  onDownvote={onDownvote}
+                  onComment={onComment}
+                  currentUserId={currentUserId}
+                />
+              ))}
+              
+              {isLoadingMore && (
+                <div className="flex justify-center items-center py-6">
+                  <div className="flex items-center gap-2 text-muted">
+                    <Loader className="w-4 h-4 animate-spin" />
+                    <span className="text-xs font-semibold">Loading more...</span>
+                  </div>
+                </div>
+              )}
+            </>
           ) : (
             <div className="text-center py-12">
               <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4 border border-border">

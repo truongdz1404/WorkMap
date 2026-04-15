@@ -19,6 +19,7 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
@@ -260,6 +261,15 @@ export default function App() {
     }
   };
 
+  const handleLoadMore = async () => {
+    // Simulate loading delay for infinite scroll effect
+    setIsLoadingMore(true);
+    await new Promise(resolve => setTimeout(resolve, 500));
+    setIsLoadingMore(false);
+    // In the future, this can be used to fetch more stories from Firestore
+    // using pagination (limit + startAfter)
+  };
+
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-background font-sans">
       <main className="flex-1 relative order-1">
@@ -324,7 +334,10 @@ export default function App() {
         currentUserId={user?.uid}
         onUpvote={handleUpvote}
         onDownvote={handleDownvote}
+        onComment={handleAddComment}
         onSeedData={handleSeedData}
+        isLoadingMore={isLoadingMore}
+        onLoadMore={handleLoadMore}
       />
     </div>
   );

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { ThumbsUp, ThumbsDown, Clock, User, MessageCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { useState } from 'react';
 
 interface StoryCardProps {
   story: Story;
@@ -20,6 +21,11 @@ export default function StoryCard({ story, onClick, onUpvote, onDownvote, onComm
   const emotion = EMOTIONS.find(e => e.value === story.emotion);
   const hasUpvoted = currentUserId && story.upvotedBy?.includes(currentUserId);
   const hasDownvoted = currentUserId && story.downvotedBy?.includes(currentUserId);
+  const [hoveredButton, setHoveredButton] = useState<string | null>(null);
+
+  const upvoteCount = story.upvotedBy?.length || 0;
+  const downvoteCount = story.downvotedBy?.length || 0;
+  const commentCount = story.comments?.length || 0;
 
   return (
     <Card
@@ -47,46 +53,68 @@ export default function StoryCard({ story, onClick, onUpvote, onDownvote, onComm
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6 pt-3 space-y-4">
-        <p className="text-sm text-foreground/70 leading-relaxed line-clamp-2">
+        <p className="text-sm text-foreground/70 leading-relaxed line-clamp-3">
           {story.content}
         </p>
 
-        <div className="flex items-center justify-between pt-2 border-t border-border/30">
-          <div className="flex items-center gap-2 text-[11px] text-muted font-bold uppercase tracking-wider">
+        <div className="flex items-center justify-between pt-3 border-t border-border/30">
+          <div className="flex items-center gap-3 text-[11px] text-muted font-bold uppercase tracking-wider">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onUpvote?.(story.id);
               }}
-              className="flex items-center gap-1 transition-colors p-1.5 rounded-md"
+              onMouseEnter={() => setHoveredButton('upvote')}
+              onMouseLeave={() => setHoveredButton(null)}
+              className="flex items-center gap-1.5 px-2 py-1.5 rounded-md transition-all hover:bg-green-50"
             >
-              <ThumbsUp className={`w-4 h-4 transition-colors ${hasUpvoted ? 'text-green-600' : 'text-gray-400'}`} /> {story.upvotedBy?.length || 0}
+              <ThumbsUp 
+                className={`w-4 h-4 transition-colors ${
+                  hoveredButton === 'upvote' || hasUpvoted ? 'text-green-600' : 'text-gray-400'
+                }`} 
+              />
+              <span className="font-semibold">{upvoteCount}</span>
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onDownvote?.(story.id);
               }}
-              className="flex items-center gap-1 transition-colors p-1.5 rounded-md"
+              onMouseEnter={() => setHoveredButton('downvote')}
+              onMouseLeave={() => setHoveredButton(null)}
+              className="flex items-center gap-1.5 px-2 py-1.5 rounded-md transition-all hover:bg-red-50"
             >
-              <ThumbsDown className={`w-4 h-4 transition-colors ${hasDownvoted ? 'text-red-600' : 'text-gray-400'}`} /> {story.downvotedBy?.length || 0}
+              <ThumbsDown 
+                className={`w-4 h-4 transition-colors ${
+                  hoveredButton === 'downvote' || hasDownvoted ? 'text-red-600' : 'text-gray-400'
+                }`} 
+              />
+              <span className="font-semibold">{downvoteCount}</span>
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onComment?.(story.id);
               }}
-              className="flex items-center gap-1 transition-colors p-1.5 rounded-md ml-1 group"
+              onMouseEnter={() => setHoveredButton('comment')}
+              onMouseLeave={() => setHoveredButton(null)}
+              className="flex items-center gap-1.5 px-2 py-1.5 rounded-md transition-all hover:bg-blue-50 ml-1"
             >
-              <MessageCircle className="w-4 h-4 transition-colors text-gray-400 group-hover:text-blue-600" /> {story.comments?.length || 0}
+              <MessageCircle 
+                className={`w-4 h-4 transition-colors ${
+                  hoveredButton === 'comment' ? 'text-blue-600' : 'text-gray-400'
+                }`} 
+              />
+              <span className="font-semibold">{commentCount}</span>
             </button>
           </div>
-          <span className="text-[10px] text-muted font-bold uppercase tracking-wider">
+
+          <span className="text-[10px] font-bold text-muted">
             {formatDistanceToNow(story.createdAt)} ago
           </span>
         </div>
 
-        <div className="flex items-center gap-2 pt-1">
+        <div className="flex items-center gap-2 pt-2">
           {story.authorImage ? (
             <img src={story.authorImage} alt={story.authorName} className="w-5 h-5 rounded-full border border-border/50 object-cover" referrerPolicy="no-referrer" />
           ) : (

@@ -377,13 +377,13 @@ export default function App() {
 
       {isMobileLayout && (
         <div
-          className={`order-2 flex h-5 cursor-row-resize items-center justify-center bg-card/90 ${isResizingSidebar ? 'bg-accent/80' : ''}`}
+          className={`order-2 flex h-8 cursor-row-resize touch-none select-none items-center justify-center bg-card/90 ${isResizingSidebar ? 'bg-accent/80' : ''}`}
           onPointerDown={handleSidebarResizeStart}
           role="separator"
           aria-label="Resize sidebar"
           aria-orientation="horizontal"
         >
-          <div className="h-1.5 w-14 rounded-full bg-muted/70" />
+          <div className="h-1.5 w-20 rounded-full bg-muted/70" />
         </div>
       )}
 

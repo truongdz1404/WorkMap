@@ -407,13 +407,28 @@ export default function App() {
 
       {isMobileLayout && (
         <div
-          className={`order-2 ${isMobileSidebarVisible ? 'flex' : 'hidden'} h-8 cursor-row-resize touch-none select-none items-center justify-center bg-card/90 ${isResizingSidebar ? 'bg-accent/80' : ''}`}
+          className={`order-2 ${isMobileSidebarVisible ? 'flex' : 'hidden'} h-8 items-center bg-card/90 px-2 ${isResizingSidebar ? 'bg-accent/80' : ''}`}
           onPointerDown={handleSidebarResizeStart}
           role="separator"
           aria-label="Resize sidebar"
           aria-orientation="horizontal"
         >
-          <div className="h-1.5 w-20 rounded-full bg-muted/70" />
+          <div className="flex flex-1 cursor-row-resize touch-none select-none items-center justify-center">
+            <div className="h-1.5 w-20 rounded-full bg-muted/70" />
+          </div>
+
+          <button
+            type="button"
+            aria-label="Hide sidebar"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMobileSidebarVisible(false);
+            }}
+            className="ml-2 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-white/95 shadow-sm backdrop-blur"
+          >
+            <PanelBottomClose className="h-4 w-4 text-foreground/70" />
+          </button>
         </div>
       )}
 
@@ -422,17 +437,6 @@ export default function App() {
           className="relative order-2 min-h-0 min-[700px]:h-full"
           style={isMobileLayout ? { height: `${mobileSidebarHeightVh}dvh` } : undefined}
         >
-          {isMobileLayout && (
-            <button
-              type="button"
-              aria-label="Hide sidebar"
-              onClick={() => setIsMobileSidebarVisible(false)}
-              className="absolute right-2 top-2 z-30 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-white/95 shadow-md backdrop-blur"
-            >
-              <PanelBottomClose className="h-4 w-4 text-foreground/70" />
-            </button>
-          )}
-
           <Sidebar
             stories={stories}
             onSelectStory={setSelectedStory}

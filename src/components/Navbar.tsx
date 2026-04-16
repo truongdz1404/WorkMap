@@ -45,7 +45,7 @@ export default function Navbar({ user, onLogin, onLogout, onAddStory }: NavbarPr
             </div>
           )}
           <div className="hidden md:block">
-            <p className="text-[9px] uppercase font-black text-muted leading-none mb-1">Welcome</p>
+            <p className="text-[9px] uppercase font-black leading-none mb-1">Welcome</p>
             <p className="text-[11px] font-bold text-foreground leading-none">{user.displayName?.split(' ')[0]}</p>
           </div>
           <Button variant="ghost" size="icon" onClick={onLogout} className="h-8 w-8 rounded-full hover:bg-red-50 hover:text-red-600 sm:ml-2">

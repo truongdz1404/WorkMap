@@ -187,7 +187,7 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
       </ScrollArea>
 
       <div className="hidden border-t border-border bg-accent/30 px-4 py-3 sm:block sm:p-6">
-        <p className="text-[10px] text-center text-muted font-medium opacity-70">
+        <p className="text-[10px] text-center font-medium opacity-70">
           Learning from workplace journeys. Anonymous posting enabled.
         </p>
       </div>

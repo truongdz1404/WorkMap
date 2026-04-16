@@ -4,6 +4,7 @@ import { CATEGORIES } from '../constants';
 import StoryCard from './StoryCard';
 import { Input } from './ui/input';
 import { ScrollArea } from './ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Search, Filter, Map as MapIcon, List, Database, Loader } from 'lucide-react';
 import { Button } from './ui/button';
 
@@ -24,6 +25,9 @@ interface SidebarProps {
 export default function Sidebar({ stories, onSelectStory, onFilterChange, selectedCategory, currentUserId, onUpvote, onDownvote, onComment, onSeedData, isLoadingMore, onLoadMore }: SidebarProps) {
   const [search, setSearch] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
+  const selectedCategoryLabel = selectedCategory === 'all'
+    ? 'All'
+    : CATEGORIES.find((cat) => cat.value === selectedCategory)?.label ?? 'All';
 
   const filteredStories = stories.filter(s => {
     const matchesCategory = selectedCategory === 'all' || s.category === selectedCategory;
@@ -51,9 +55,9 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
   }, [onLoadMore, isLoadingMore]);
 
   return (
-    <div className="order-2 z-10 flex h-[48dvh] min-h-0 w-full flex-col border-t border-border bg-card shadow-xl md:h-full md:w-[340px] md:border-l md:border-t-0">
-      <div className="border-b border-border px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8">
-        <div className="mb-4 flex items-center gap-2 sm:mb-5 md:mb-6">
+    <div className="z-10 flex h-full min-h-0 w-full flex-col border-t border-border bg-card shadow-xl md:w-[340px] md:border-l md:border-t-0">
+      <div className="border-b border-border px-4 py-3 sm:px-6 sm:py-6 md:px-8 md:py-8">
+        <div className="mb-3 hidden items-center gap-2 sm:mb-5 md:mb-6 md:flex">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/20 md:h-10 md:w-10">
             <MapIcon className="h-5 w-5 text-white md:h-6 md:w-6" />
           </div>
@@ -63,43 +67,71 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
           </div>
         </div>
 
-        <div className="relative mb-4 sm:mb-5 md:mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
-          <Input
-            placeholder="Search stories..."
-            className="h-10 border-border bg-background pl-10 focus-visible:ring-primary"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        <div className="mb-3 flex items-center gap-2 md:hidden">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <Input
+              placeholder="Search..."
+              className="h-10 border-border bg-background pl-9 focus-visible:ring-primary"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="w-[132px] shrink-0">
+            <Select value={selectedCategory} onValueChange={(v) => onFilterChange(v as Category | 'all')}>
+              <SelectTrigger className="h-10 w-full border-border bg-background text-xs font-bold">
+                <SelectValue>{selectedCategoryLabel}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all" className="font-semibold">All</SelectItem>
+                {CATEGORIES.map((cat) => (
+                  <SelectItem key={cat.value} value={cat.value} className="font-semibold">
+                    {cat.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-[10px] font-bold text-muted uppercase tracking-wider mb-1">
-            <Filter className="w-3 h-3" /> Filter by Category
+        <div className="hidden md:block">
+          <div className="relative mb-4 sm:mb-5 md:mb-6">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
+            <Input
+              placeholder="Search stories..."
+              className="h-10 border-border bg-background pl-10 focus-visible:ring-primary"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => onFilterChange('all')}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all border ${selectedCategory === 'all'
-                  ? 'bg-primary text-white shadow-md border-transparent'
-                  : 'bg-white text-foreground hover:bg-accent border-border hover:border-primary/30'
-                }`}
-            >
-              All
-            </button>
-            {CATEGORIES.map((cat) => (
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2 text-[10px] font-bold text-muted uppercase tracking-wider mb-1">
+              <Filter className="w-3 h-3" /> Filter by Category
+            </div>
+            <div className="flex flex-wrap gap-2">
               <button
-                key={cat.value}
-                onClick={() => onFilterChange(cat.value)}
-                className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all border ${selectedCategory === cat.value
-                    ? '!text-white shadow-md border-transparent'
-                    : 'bg-white text-foreground hover:bg-accent/30 border-border'
+                onClick={() => onFilterChange('all')}
+                className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all border ${selectedCategory === 'all'
+                    ? 'bg-primary text-white shadow-md border-transparent'
+                    : 'bg-white text-foreground hover:bg-accent border-border hover:border-primary/30'
                   }`}
-                style={{ backgroundColor: selectedCategory === cat.value ? cat.color : undefined }}
               >
-                {cat.label}
+                All
               </button>
-            ))}
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.value}
+                  onClick={() => onFilterChange(cat.value)}
+                  className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all border ${selectedCategory === cat.value
+                      ? '!text-white shadow-md border-transparent'
+                      : 'bg-white text-foreground hover:bg-accent/30 border-border'
+                    }`}
+                  style={{ backgroundColor: selectedCategory === cat.value ? cat.color : undefined }}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -154,7 +186,7 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
         </div>
       </ScrollArea>
 
-      <div className="border-t border-border bg-accent/30 px-4 py-3 sm:p-6">
+      <div className="hidden border-t border-border bg-accent/30 px-4 py-3 sm:block sm:p-6">
         <p className="text-[10px] text-center text-muted font-medium opacity-70">
           Learning from workplace journeys. Anonymous posting enabled.
         </p>

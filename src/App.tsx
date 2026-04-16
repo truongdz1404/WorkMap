@@ -20,6 +20,11 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isMobileLayout, setIsMobileLayout] = useState(() => window.innerWidth < 768);
+  const [mobileSidebarHeightVh, setMobileSidebarHeightVh] = useState(55);
+  const [isResizingSidebar, setIsResizingSidebar] = useState(false);
+
+  const clampSidebarHeight = (value: number) => Math.min(75, Math.max(35, value));
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
@@ -41,6 +46,20 @@ export default function App() {
     return () => {
       unsubscribeAuth();
       unsubscribeStories();
+    };
+  }, []);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const handleViewportChange = (event: MediaQueryListEvent) => {
+      setIsMobileLayout(event.matches);
+    };
+
+    setIsMobileLayout(mediaQuery.matches);
+    mediaQuery.addEventListener('change', handleViewportChange);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleViewportChange);
     };
   }, []);
 
@@ -270,9 +289,39 @@ export default function App() {
     // using pagination (limit + startAfter)
   };
 
+  const handleSidebarResizeStart = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isMobileLayout) return;
+
+    e.preventDefault();
+    const startY = e.clientY;
+    const startHeight = mobileSidebarHeightVh;
+    setIsResizingSidebar(true);
+
+    const handlePointerMove = (moveEvent: PointerEvent) => {
+      const deltaVh = ((moveEvent.clientY - startY) / window.innerHeight) * 100;
+      setMobileSidebarHeightVh(clampSidebarHeight(startHeight - deltaVh));
+    };
+
+    const handlePointerUp = () => {
+      setIsResizingSidebar(false);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('pointercancel', handlePointerUp);
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+    window.addEventListener('pointercancel', handlePointerUp);
+  };
+
+  const mobileMainHeightVh = 100 - mobileSidebarHeightVh;
+
   return (
     <div className="flex h-dvh w-full flex-col overflow-hidden bg-background font-sans md:h-screen md:flex-row">
-      <main className="relative order-1 h-[52dvh] min-h-[320px] flex-1 md:h-auto">
+      <main
+        className="relative order-1 h-[45dvh] min-h-[240px] flex-1 md:h-auto md:min-h-0"
+        style={isMobileLayout ? { height: `${mobileMainHeightVh}dvh` } : undefined}
+      >
         <Navbar
           user={user}
           onLogin={loginWithGoogle}
@@ -326,24 +375,41 @@ export default function App() {
         </AnimatePresence>
       </main>
 
-      <Sidebar
-        stories={stories}
-        onSelectStory={setSelectedStory}
-        onFilterChange={setSelectedCategory}
-        selectedCategory={selectedCategory}
-        currentUserId={user?.uid}
-        onUpvote={handleUpvote}
-        onDownvote={handleDownvote}
-        onComment={(storyId) => {
-          const story = stories.find((s) => s.id === storyId);
-          if (story) {
-            setSelectedStory(story);
-          }
-        }}
-        onSeedData={handleSeedData}
-        isLoadingMore={isLoadingMore}
-        onLoadMore={handleLoadMore}
-      />
+      {isMobileLayout && (
+        <div
+          className={`order-2 flex h-5 cursor-row-resize items-center justify-center bg-card/90 ${isResizingSidebar ? 'bg-accent/80' : ''}`}
+          onPointerDown={handleSidebarResizeStart}
+          role="separator"
+          aria-label="Resize sidebar"
+          aria-orientation="horizontal"
+        >
+          <div className="h-1.5 w-14 rounded-full bg-muted/70" />
+        </div>
+      )}
+
+      <div
+        className="order-2 min-h-0 md:h-full"
+        style={isMobileLayout ? { height: `${mobileSidebarHeightVh}dvh` } : undefined}
+      >
+        <Sidebar
+          stories={stories}
+          onSelectStory={setSelectedStory}
+          onFilterChange={setSelectedCategory}
+          selectedCategory={selectedCategory}
+          currentUserId={user?.uid}
+          onUpvote={handleUpvote}
+          onDownvote={handleDownvote}
+          onComment={(storyId) => {
+            const story = stories.find((s) => s.id === storyId);
+            if (story) {
+              setSelectedStory(story);
+            }
+          }}
+          onSeedData={handleSeedData}
+          isLoadingMore={isLoadingMore}
+          onLoadMore={handleLoadMore}
+        />
+      </div>
     </div>
   );
 }

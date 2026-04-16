@@ -100,7 +100,7 @@ export default function StoryForm({ latitude, longitude, onSubmit, onClose, isSu
           <label className="text-[10px] font-black uppercase tracking-widest text-foreground/70">Your Story</label>
           <Textarea
             placeholder="What happened? How did you handle it?"
-            className="field-sizing-fixed h-40 max-h-56 resize-none overflow-y-auto bg-accent/30 border-border p-4 leading-relaxed focus-visible:ring-primary"
+            className="min-h-[130px] max-h-[50vh] resize-none overflow-y-auto bg-accent/30 border-border p-4 leading-relaxed focus-visible:ring-primary sm:min-h-[150px]"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             required

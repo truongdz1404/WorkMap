@@ -2,7 +2,7 @@ import { Story } from '../types';
 import { CATEGORIES, EMOTIONS } from '../constants';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { X, ThumbsUp, ThumbsDown, Share2, MapPin, Clock, User, ArrowLeft, MessageCircle, Send } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Share2, Clock, User, ArrowLeft, MessageCircle, Send } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
@@ -42,17 +42,17 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
       animate={{ x: 0 }}
       exit={{ x: '100%' }}
       transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-      className="fixed inset-y-0 right-0 w-full md:w-[500px] bg-white shadow-2xl z-50 flex flex-col border-l border-border"
+      className="fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-border bg-white shadow-2xl md:w-[500px]"
     >
-      <div className="p-6 border-b border-border flex justify-between items-center bg-background/50 backdrop-blur-sm">
+      <div className="flex items-center justify-between border-b border-border bg-background/50 p-3 backdrop-blur-sm sm:p-4 md:p-6">
         <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full hover:bg-red-50 hover:text-red-600">
           <ArrowLeft className="w-5 h-5" />
         </Button>
-        <div className="flex gap-2">
+        <div className="flex gap-1.5 sm:gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="rounded-full gap-2 text-[10px] font-black uppercase tracking-widest border-border"
+            className="rounded-full border-border px-2 text-[10px] font-black uppercase tracking-widest sm:gap-2 sm:px-3"
             onClick={() => onUpvote(story.id)}
           >
             <ThumbsUp className={`w-4 h-4 transition-colors ${hasUpvoted ? 'text-green-600' : 'text-gray-400'}`} /> {story.upvotedBy?.length || 0}
@@ -60,20 +60,21 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
           <Button
             variant="outline"
             size="sm"
-            className="rounded-full gap-2 text-[10px] font-black uppercase tracking-widest border-border"
+            className="rounded-full border-border px-2 text-[10px] font-black uppercase tracking-widest sm:gap-2 sm:px-3"
             onClick={() => onDownvote(story.id)}
           >
             <ThumbsDown className={`w-4 h-4 transition-colors ${hasDownvoted ? 'text-red-600' : 'text-gray-400'}`} /> {story.downvotedBy?.length || 0}
           </Button>
-          <Button variant="outline" size="sm" className="rounded-full gap-2 text-[10px] font-black uppercase tracking-widest border-border">
-            <Share2 className="w-4 h-4 text-primary" /> Share
+          <Button variant="outline" size="sm" className="rounded-full border-border px-2 text-[10px] font-black uppercase tracking-widest sm:gap-2 sm:px-3">
+            <Share2 className="w-4 h-4 text-primary" />
+            <span className="hidden sm:inline">Share</span>
           </Button>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-10">
-        <div className="mb-10">
-          <div className="flex items-center gap-3 mb-6">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-10">
+        <div className="mb-8 md:mb-10">
+          <div className="mb-5 flex flex-wrap items-center gap-3 sm:mb-6">
             <Badge
               variant="outline"
               className="text-[9px] uppercase font-black tracking-widest px-3 py-1 !text-foreground"
@@ -88,11 +89,11 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
               </div>
             )}
           </div>
-          <h1 className="text-4xl font-serif font-bold text-foreground leading-tight mb-8">
+          <h1 className="mb-6 font-serif text-2xl font-bold leading-tight text-foreground sm:text-3xl md:mb-8 md:text-4xl">
             {story.title}
           </h1>
 
-          <div className="grid grid-cols-2 gap-6 py-8 border-y border-border">
+          <div className="grid grid-cols-1 gap-4 border-y border-border py-5 sm:grid-cols-2 sm:gap-6 sm:py-8">
             <div className="flex items-center gap-3">
               {story.authorImage ? (
                 <img src={story.authorImage} alt={story.authorName} className="w-11 h-11 rounded-full border border-border object-cover" referrerPolicy="no-referrer" />
@@ -119,7 +120,7 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
         </div>
 
         <div className="prose prose-stone max-w-none">
-          <p className="text-foreground/80 leading-relaxed whitespace-pre-wrap text-lg font-sans">
+          <p className="whitespace-pre-wrap font-sans text-base leading-relaxed text-foreground/80 sm:text-lg">
             {story.content}
           </p>
         </div>
@@ -135,7 +136,7 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
         </div> */}
 
         {story.comments && story.comments.length > 0 && (
-          <div className="mt-16 space-y-4">
+          <div className="mt-10 space-y-4 sm:mt-16">
             <div className="flex items-center gap-2">
               <MessageCircle className="w-5 h-5 text-primary" />
               <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">Comments ({story.comments.length})</h3>
@@ -161,7 +162,7 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
           </div>
         )}
 
-        <div className="mt-12 p-6 bg-accent/20 rounded-2xl border border-border/50">
+        <div className="mt-8 rounded-2xl border border-border/50 bg-accent/20 p-4 sm:mt-12 sm:p-6">
           <div className="flex items-center gap-2 mb-4">
             <MessageCircle className="w-5 h-5 text-primary" />
             <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">Add a Comment</h3>

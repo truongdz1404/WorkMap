@@ -271,8 +271,8 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-background font-sans">
-      <main className="flex-1 relative order-1">
+    <div className="flex h-dvh w-full flex-col overflow-hidden bg-background font-sans md:h-screen md:flex-row">
+      <main className="relative order-1 h-[52dvh] min-h-[320px] flex-1 md:h-auto">
         <Navbar
           user={user}
           onLogin={loginWithGoogle}
@@ -281,7 +281,7 @@ export default function App() {
         />
 
         {error && (
-          <div className="absolute top-24 left-1/2 -translate-x-1/2 z-30 bg-red-50 border border-red-100 text-red-600 px-4 py-2 rounded-full flex items-center gap-2 shadow-lg text-sm font-bold">
+          <div className="absolute top-20 left-1/2 z-30 flex w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 items-center gap-2 rounded-full border border-red-100 bg-red-50 px-4 py-2 text-xs font-bold text-red-600 shadow-lg sm:top-24 sm:text-sm">
             <AlertCircle className="w-4 h-4" /> {error}
           </div>
         )}
@@ -299,7 +299,7 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="absolute inset-0 z-40 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm"
+              className="fixed inset-0 z-[60] flex items-center justify-center bg-black/20 p-3 backdrop-blur-sm sm:p-4"
             >
               <StoryForm
                 latitude={clickCoords.lat}
@@ -334,7 +334,12 @@ export default function App() {
         currentUserId={user?.uid}
         onUpvote={handleUpvote}
         onDownvote={handleDownvote}
-        onComment={handleAddComment}
+        onComment={(storyId) => {
+          const story = stories.find((s) => s.id === storyId);
+          if (story) {
+            setSelectedStory(story);
+          }
+        }}
         onSeedData={handleSeedData}
         isLoadingMore={isLoadingMore}
         onLoadMore={handleLoadMore}

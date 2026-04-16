@@ -51,23 +51,23 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
   }, [onLoadMore, isLoadingMore]);
 
   return (
-    <div className="h-full min-h-0 flex flex-col bg-card border-l border-border w-full md:w-[340px] shadow-xl z-10 order-2">
-      <div className="p-8 border-b border-border">
-        <div className="flex items-center gap-2 mb-6">
-          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-            <MapIcon className="w-6 h-6 text-white" />
+    <div className="order-2 z-10 flex h-[48dvh] min-h-0 w-full flex-col border-t border-border bg-card shadow-xl md:h-full md:w-[340px] md:border-l md:border-t-0">
+      <div className="border-b border-border px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8">
+        <div className="mb-4 flex items-center gap-2 sm:mb-5 md:mb-6">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/20 md:h-10 md:w-10">
+            <MapIcon className="h-5 w-5 text-white md:h-6 md:w-6" />
           </div>
           <div>
-            <h1 className="text-xl font-serif font-bold tracking-tight text-foreground">WorkMap</h1>
+            <h1 className="text-lg font-serif font-bold tracking-tight text-foreground md:text-xl">WorkMap</h1>
             <p className="text-[10px] uppercase font-bold tracking-widest text-muted">Community Stories</p>
           </div>
         </div>
 
-        <div className="relative mb-6">
+        <div className="relative mb-4 sm:mb-5 md:mb-6">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
           <Input
             placeholder="Search stories..."
-            className="pl-10 bg-background border-border focus-visible:ring-primary"
+            className="h-10 border-border bg-background pl-10 focus-visible:ring-primary"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -104,8 +104,8 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
         </div>
       </div>
 
-      <ScrollArea ref={scrollRef} className="flex-1 min-h-0 px-6">
-        <div className="py-6 space-y-4">
+      <ScrollArea ref={scrollRef} className="flex-1 min-h-0 px-4 sm:px-6">
+        <div className="space-y-3 py-4 sm:space-y-4 sm:py-6">
           <div className="flex items-center justify-between mb-2 px-2">
             <h2 className="text-sm font-serif font-bold text-foreground flex items-center gap-2">
               <List className="w-4 h-4 text-primary" /> Recent Stories
@@ -154,7 +154,7 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
         </div>
       </ScrollArea>
 
-      <div className="p-6 border-t border-border bg-accent/30">
+      <div className="border-t border-border bg-accent/30 px-4 py-3 sm:p-6">
         <p className="text-[10px] text-center text-muted font-medium opacity-70">
           Learning from workplace journeys. Anonymous posting enabled.
         </p>

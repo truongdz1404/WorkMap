@@ -8,9 +8,10 @@ import StoryForm from './components/StoryForm';
 import StoryDetail from './components/StoryDetail';
 import Navbar from './components/Navbar';
 import { AnimatePresence, motion } from 'motion/react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, PanelBottomOpen, PanelBottomClose } from 'lucide-react';
 
 export default function App() {
+  const MOBILE_BREAKPOINT = 700;
   const [user, setUser] = useState<User | null>(null);
   const [stories, setStories] = useState<Story[]>([]);
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
@@ -20,9 +21,10 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [isMobileLayout, setIsMobileLayout] = useState(() => window.innerWidth < 768);
+  const [isMobileLayout, setIsMobileLayout] = useState(() => window.innerWidth < MOBILE_BREAKPOINT);
   const [mobileSidebarHeightVh, setMobileSidebarHeightVh] = useState(55);
   const [isResizingSidebar, setIsResizingSidebar] = useState(false);
+  const [isMobileSidebarVisible, setIsMobileSidebarVisible] = useState(true);
 
   const clampSidebarHeight = (value: number) => Math.min(75, Math.max(35, value));
 
@@ -50,16 +52,40 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 767px)');
-    const handleViewportChange = (event: MediaQueryListEvent) => {
-      setIsMobileLayout(event.matches);
+    const mediaQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+
+    const applyViewportState = (isMobile: boolean) => {
+      setIsMobileLayout(isMobile);
+      if (!isMobile) {
+        setIsMobileSidebarVisible(true);
+        setIsResizingSidebar(false);
+      }
     };
 
-    setIsMobileLayout(mediaQuery.matches);
-    mediaQuery.addEventListener('change', handleViewportChange);
+    const handleViewportChange = (event: MediaQueryListEvent) => {
+      applyViewportState(event.matches);
+    };
+
+    const handleResize = () => {
+      applyViewportState(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+
+    applyViewportState(window.innerWidth < MOBILE_BREAKPOINT);
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleViewportChange);
+    } else {
+      mediaQuery.addListener(handleViewportChange);
+    }
+    window.addEventListener('resize', handleResize);
 
     return () => {
-      mediaQuery.removeEventListener('change', handleViewportChange);
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleViewportChange);
+      } else {
+        mediaQuery.removeListener(handleViewportChange);
+      }
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
@@ -315,12 +341,15 @@ export default function App() {
   };
 
   const mobileMainHeightVh = 100 - mobileSidebarHeightVh;
+  const mobileMapHeight = isMobileLayout
+    ? (isMobileSidebarVisible ? `${mobileMainHeightVh}dvh` : '100dvh')
+    : undefined;
 
   return (
-    <div className="flex h-dvh w-full flex-col overflow-hidden bg-background font-sans md:h-screen md:flex-row">
+    <div className="flex h-dvh w-full flex-col overflow-hidden bg-background font-sans min-[700px]:h-screen min-[700px]:flex-row">
       <main
-        className="relative order-1 h-[45dvh] min-h-[240px] flex-1 md:h-auto md:min-h-0"
-        style={isMobileLayout ? { height: `${mobileMainHeightVh}dvh` } : undefined}
+        className="relative order-1 h-[45dvh] min-h-[240px] flex-1 min-[700px]:h-auto min-[700px]:min-h-0"
+        style={mobileMapHeight ? { height: mobileMapHeight } : undefined}
       >
         <Navbar
           user={user}
@@ -340,6 +369,7 @@ export default function App() {
           onSelectStory={setSelectedStory}
           onMapClick={handleMapClick}
           selectedStoryId={selectedStory?.id}
+          layoutSignal={`${isMobileLayout}-${isMobileSidebarVisible}-${mobileSidebarHeightVh.toFixed(2)}`}
         />
 
         <AnimatePresence>
@@ -377,7 +407,7 @@ export default function App() {
 
       {isMobileLayout && (
         <div
-          className={`order-2 flex h-8 cursor-row-resize touch-none select-none items-center justify-center bg-card/90 ${isResizingSidebar ? 'bg-accent/80' : ''}`}
+          className={`order-2 ${isMobileSidebarVisible ? 'flex' : 'hidden'} h-8 cursor-row-resize touch-none select-none items-center justify-center bg-card/90 ${isResizingSidebar ? 'bg-accent/80' : ''}`}
           onPointerDown={handleSidebarResizeStart}
           role="separator"
           aria-label="Resize sidebar"
@@ -387,29 +417,54 @@ export default function App() {
         </div>
       )}
 
-      <div
-        className="order-2 min-h-0 md:h-full"
-        style={isMobileLayout ? { height: `${mobileSidebarHeightVh}dvh` } : undefined}
-      >
-        <Sidebar
-          stories={stories}
-          onSelectStory={setSelectedStory}
-          onFilterChange={setSelectedCategory}
-          selectedCategory={selectedCategory}
-          currentUserId={user?.uid}
-          onUpvote={handleUpvote}
-          onDownvote={handleDownvote}
-          onComment={(storyId) => {
-            const story = stories.find((s) => s.id === storyId);
-            if (story) {
-              setSelectedStory(story);
-            }
-          }}
-          onSeedData={handleSeedData}
-          isLoadingMore={isLoadingMore}
-          onLoadMore={handleLoadMore}
-        />
-      </div>
+      {(!isMobileLayout || isMobileSidebarVisible) && (
+        <div
+          className="relative order-2 min-h-0 min-[700px]:h-full"
+          style={isMobileLayout ? { height: `${mobileSidebarHeightVh}dvh` } : undefined}
+        >
+          {isMobileLayout && (
+            <button
+              type="button"
+              aria-label="Hide sidebar"
+              onClick={() => setIsMobileSidebarVisible(false)}
+              className="absolute right-2 top-2 z-30 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-white/95 shadow-md backdrop-blur"
+            >
+              <PanelBottomClose className="h-4 w-4 text-foreground/70" />
+            </button>
+          )}
+
+          <Sidebar
+            stories={stories}
+            onSelectStory={setSelectedStory}
+            onFilterChange={setSelectedCategory}
+            selectedCategory={selectedCategory}
+            currentUserId={user?.uid}
+            onUpvote={handleUpvote}
+            onDownvote={handleDownvote}
+            onComment={(storyId) => {
+              const story = stories.find((s) => s.id === storyId);
+              if (story) {
+                setSelectedStory(story);
+              }
+            }}
+            onSeedData={handleSeedData}
+            isLoadingMore={isLoadingMore}
+            onLoadMore={handleLoadMore}
+          />
+        </div>
+      )}
+
+      {isMobileLayout && !isMobileSidebarVisible && (
+        <button
+          type="button"
+          aria-label="Show sidebar"
+          onClick={() => setIsMobileSidebarVisible(true)}
+          className="fixed bottom-4 right-4 z-30 flex h-11 items-center gap-2 rounded-full border border-border bg-white/95 px-3 shadow-lg backdrop-blur"
+        >
+          <PanelBottomOpen className="h-4 w-4 text-foreground/80" />
+          <span className="text-xs font-bold uppercase tracking-wider">Stories</span>
+        </button>
+      )}
     </div>
   );
 }

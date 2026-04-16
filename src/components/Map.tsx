@@ -1,15 +1,17 @@
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { Story } from '../types';
 import { CATEGORIES, MAP_CENTER, DEFAULT_ZOOM } from '../constants';
 import { MapPin } from 'lucide-react';
 import { renderToString } from 'react-dom/server';
+import { useEffect } from 'react';
 
 interface MapProps {
   stories: Story[];
   onSelectStory: (story: Story) => void;
   onMapClick: (lat: number, lng: number) => void;
   selectedStoryId?: string;
+  layoutSignal?: string;
 }
 
 const createCustomIcon = (story: Story) => {
@@ -56,7 +58,21 @@ function MapEvents({ onMapClick }: { onMapClick: (lat: number, lng: number) => v
   return null;
 }
 
-export default function Map({ stories, onSelectStory, onMapClick, selectedStoryId }: MapProps) {
+function MapSizeSync({ layoutSignal }: { layoutSignal?: string }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      map.invalidateSize();
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [map, layoutSignal]);
+
+  return null;
+}
+
+export default function Map({ stories, onSelectStory, onMapClick, selectedStoryId, layoutSignal }: MapProps) {
   return (
     <MapContainer 
       center={MAP_CENTER} 
@@ -94,6 +110,7 @@ export default function Map({ stories, onSelectStory, onMapClick, selectedStoryI
       ))}
 
       <MapEvents onMapClick={onMapClick} />
+      <MapSizeSync layoutSignal={layoutSignal} />
     </MapContainer>
   );
 }

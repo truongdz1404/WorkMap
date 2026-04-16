@@ -55,19 +55,19 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
   }, [onLoadMore, isLoadingMore]);
 
   return (
-    <div className="z-10 flex h-full min-h-0 w-full flex-col border-t border-border bg-card shadow-xl md:w-[340px] md:border-l md:border-t-0">
-      <div className="border-b border-border px-4 py-3 sm:px-6 sm:py-6 md:px-8 md:py-8">
-        <div className="mb-3 hidden items-center gap-2 sm:mb-5 md:mb-6 md:flex">
+    <div className="z-10 flex h-full min-h-0 w-full flex-col border-t border-border bg-card shadow-xl min-[700px]:w-[340px] min-[700px]:border-l min-[700px]:border-t-0">
+      <div className="border-b border-border px-4 py-3 sm:px-6 sm:py-6 min-[700px]:px-8 min-[700px]:py-8">
+        <div className="mb-3 hidden items-center gap-2 sm:mb-5 min-[700px]:mb-6 min-[700px]:flex">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/20 md:h-10 md:w-10">
             <MapIcon className="h-5 w-5 text-white md:h-6 md:w-6" />
           </div>
           <div>
-            <h1 className="text-lg font-serif font-bold tracking-tight text-foreground md:text-xl">WorkMap</h1>
+            <h1 className="text-lg font-serif font-bold tracking-tight text-foreground min-[700px]:text-xl">WorkMap</h1>
             <p className="text-[10px] uppercase font-bold tracking-widest text-muted">Community Stories</p>
           </div>
         </div>
 
-        <div className="mb-3 flex items-center gap-2 md:hidden">
+        <div className="mb-3 flex items-center gap-2 min-[700px]:hidden">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
             <Input
@@ -94,7 +94,7 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
           </div>
         </div>
 
-        <div className="hidden md:block">
+        <div className="hidden min-[700px]:block">
           <div className="relative mb-4 sm:mb-5 md:mb-6">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
             <Input

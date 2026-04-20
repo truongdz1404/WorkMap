@@ -3,10 +3,10 @@ import { CATEGORIES, EMOTIONS } from '../constants';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { ThumbsUp, ThumbsDown, Share2, Clock, User, ArrowLeft, MessageCircle, Send, MessageCircleOff } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
 import { Textarea } from './ui/textarea';
+import { useI18n } from '../i18n';
 
 interface StoryDetailProps {
   story: Story;
@@ -18,6 +18,7 @@ interface StoryDetailProps {
 }
 
 export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAddComment, currentUserId }: StoryDetailProps) {
+  const { t, formatRelativeTime } = useI18n();
   const category = CATEGORIES.find(c => c.value === story.category);
   const emotion = EMOTIONS.find(e => e.value === story.emotion);
   const [commentText, setCommentText] = useState('');
@@ -68,7 +69,7 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
           </Button>
           <Button variant="outline" size="sm" className="rounded-full border-border px-2 text-[10px] font-black uppercase tracking-widest sm:gap-2 sm:px-3">
             <Share2 className="w-4 h-4 text-primary" />
-            <span className="hidden sm:inline">Share</span>
+            <span className="hidden sm:inline">{t('storyDetail.share')}</span>
           </Button>
         </div>
       </div>
@@ -81,12 +82,12 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
               className="text-[9px] uppercase font-black tracking-widest px-3 py-1 !text-foreground"
               style={{ borderColor: category?.color, backgroundColor: `${category?.color}10` }}
             >
-              {category?.label}
+              {category ? t(`categories.${category.value}`) : t('categories.other')}
             </Badge>
             {emotion && (
               <div className="flex items-center gap-2 bg-accent/50 px-3 py-1 rounded-full border border-border">
                 <span className="text-lg">{emotion.icon}</span>
-                <span className="text-[9px] uppercase font-black tracking-widest">{emotion.label}</span>
+                <span className="text-[9px] uppercase font-black tracking-widest">{t(`emotions.${emotion.value}`)}</span>
               </div>
             )}
           </div>
@@ -104,8 +105,8 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
                 </div>
               )}
               <div>
-                <p className="text-[9px] uppercase font-black text-muted tracking-widest leading-none mb-1">Author</p>
-                <p className="text-sm font-bold text-foreground">{story.authorName || 'Anonymous'}</p>
+                <p className="text-[9px] uppercase font-black text-muted tracking-widest leading-none mb-1">{t('storyDetail.author')}</p>
+                <p className="text-sm font-bold text-foreground">{story.authorName || t('storyDetail.anonymous')}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -114,7 +115,7 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
               </div>
               <div>
                 {/* <p className="text-[9px] uppercase font-black text-muted tracking-widest leading-none mb-1">Shared</p> */}
-                <p className="text-sm font-bold text-foreground">{formatDistanceToNow(story.createdAt)} ago</p>
+                <p className="text-sm font-bold text-foreground">{formatRelativeTime(story.createdAt)}</p>
               </div>
             </div>
           </div>
@@ -140,7 +141,7 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
           <div className="mt-10 space-y-4 sm:mt-16">
             <div className="flex items-center gap-2">
               <MessageCircle className="w-5 h-5 text-primary" />
-              <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">Comments ({story.comments.length})</h3>
+              <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">{t('storyDetail.commentsTitle', { count: story.comments.length })}</h3>
             </div>
             <div className="space-y-4">
               {story.comments.map((comment) => (
@@ -154,7 +155,7 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
                       </div>
                     )}
                     <span className="text-xs font-bold text-foreground">{comment.authorName}</span>
-                    <span className="text-[9px] text-muted ml-auto">{formatDistanceToNow(comment.createdAt)} ago</span>
+                    <span className="text-[9px] text-muted ml-auto">{formatRelativeTime(comment.createdAt)}</span>
                   </div>
                   <p className="text-sm text-foreground/80">{comment.content}</p>
                 </div>
@@ -167,11 +168,11 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
           <div className="mt-8 rounded-2xl border border-border/50 bg-accent/20 p-4 sm:mt-12 sm:p-6">
             <div className="flex items-center gap-2 mb-4">
               <MessageCircle className="w-5 h-5 text-primary" />
-              <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">Add a Comment</h3>
+              <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">{t('storyDetail.addComment')}</h3>
             </div>
             <div className="space-y-3">
               <Textarea
-                placeholder="Share your thoughts..."
+                placeholder={t('storyDetail.shareThoughts')}
                 className="min-h-[80px] bg-white border-border focus-visible:ring-primary p-3"
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
@@ -179,7 +180,7 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
               />
               <div className="flex items-center justify-between">
                 <p className="text-[9px] text-muted font-bold uppercase tracking-widest">
-                  {commentText.length} / 500 characters
+                  {t('storyDetail.commentCharacters', { count: commentText.length })}
                 </p>
                 <Button
                   onClick={handleAddComment}
@@ -187,7 +188,7 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
                   className="rounded-full gap-2 text-[10px] font-black uppercase tracking-widest bg-primary hover:bg-primary/90"
                 >
                   <Send className="w-3 h-3" />
-                  {isSubmittingComment ? 'Posting...' : 'Comment'}
+                  {isSubmittingComment ? t('storyDetail.posting') : t('storyDetail.comment')}
                 </Button>
               </div>
             </div>
@@ -196,7 +197,7 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
           <div className="mt-8 rounded-2xl border border-border/60 bg-muted/20 p-4 sm:mt-12 sm:p-6">
             <div className="flex items-center gap-2 text-muted">
               <MessageCircleOff className="w-5 h-5" />
-              <h3 className="text-sm font-bold uppercase tracking-widest">Comments are turned off for this story</h3>
+              <h3 className="text-sm font-bold uppercase tracking-widest">{t('storyDetail.commentsOff')}</h3>
             </div>
           </div>
         )}

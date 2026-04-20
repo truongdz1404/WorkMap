@@ -115,7 +115,7 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
                 onClick={() => onFilterChange('all')}
                 className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all border ${selectedCategory === 'all'
                     ? 'bg-primary text-white shadow-md border-transparent'
-                    : 'bg-white text-foreground hover:bg-accent border-border hover:border-primary/30'
+                    : 'bg-card text-foreground hover:bg-accent border-border dark:bg-card dark:hover:bg-accent hover:border-primary/30'
                   }`}
               >
                 {t('sidebar.all')}
@@ -126,7 +126,7 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
                   onClick={() => onFilterChange(cat.value)}
                   className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all border ${selectedCategory === cat.value
                       ? '!text-white shadow-md border-transparent'
-                      : 'bg-white text-foreground hover:bg-accent/30 border-border'
+                      : 'bg-card text-foreground hover:bg-accent/30 border-border dark:bg-card dark:hover:bg-accent/30'
                     }`}
                   style={{ backgroundColor: selectedCategory === cat.value ? cat.color : undefined }}
                 >

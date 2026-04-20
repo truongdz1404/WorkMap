@@ -31,7 +31,7 @@ export default function StoryCard({ story, onClick, onUpvote, onDownvote, onComm
 
   return (
     <Card
-      className="cursor-pointer hover:shadow-lg transition-all border border-border/50 bg-white hover:border-primary/50 group rounded-2xl overflow-hidden"
+      className="cursor-pointer hover:shadow-lg transition-all border border-border/50 bg-card hover:border-primary/50 group rounded-2xl overflow-hidden dark:bg-card"
       onClick={onClick}
     >
       <CardHeader className="p-6 pb-3">
@@ -68,11 +68,11 @@ export default function StoryCard({ story, onClick, onUpvote, onDownvote, onComm
               }}
               onMouseEnter={() => setHoveredButton('upvote')}
               onMouseLeave={() => setHoveredButton(null)}
-              className="flex items-center gap-1.5 px-2 py-1.5 rounded-md transition-all hover:bg-green-50"
+              className="flex items-center gap-1.5 px-2 py-1.5 rounded-md transition-all hover:bg-accent/50"
             >
               <ThumbsUp 
                 className={`w-4 h-4 transition-colors ${
-                  hoveredButton === 'upvote' || hasUpvoted ? 'text-green-600' : 'text-gray-400'
+                  hoveredButton === 'upvote' || hasUpvoted ? 'text-green-600 dark:text-green-400' : 'text-muted'
                 }`} 
               />
               <span className="font-semibold">{upvoteCount}</span>
@@ -84,11 +84,11 @@ export default function StoryCard({ story, onClick, onUpvote, onDownvote, onComm
               }}
               onMouseEnter={() => setHoveredButton('downvote')}
               onMouseLeave={() => setHoveredButton(null)}
-              className="flex items-center gap-1.5 px-2 py-1.5 rounded-md transition-all hover:bg-red-50"
+              className="flex items-center gap-1.5 px-2 py-1.5 rounded-md transition-all hover:bg-accent/50"
             >
               <ThumbsDown 
                 className={`w-4 h-4 transition-colors ${
-                  hoveredButton === 'downvote' || hasDownvoted ? 'text-red-600' : 'text-gray-400'
+                  hoveredButton === 'downvote' || hasDownvoted ? 'text-red-600 dark:text-red-400' : 'text-muted'
                 }`} 
               />
               <span className="font-semibold">{downvoteCount}</span>
@@ -102,11 +102,11 @@ export default function StoryCard({ story, onClick, onUpvote, onDownvote, onComm
               onMouseEnter={() => setHoveredButton('comment')}
               onMouseLeave={() => setHoveredButton(null)}
               disabled={!commentsEnabled}
-              className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md transition-all ml-1 ${commentsEnabled ? 'hover:bg-blue-50' : 'opacity-45 cursor-not-allowed'}`}
+              className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md transition-all ml-1 ${commentsEnabled ? 'hover:bg-accent/50' : 'opacity-45 cursor-not-allowed'}`}
             >
               <MessageCircle 
                 className={`w-4 h-4 transition-colors ${
-                  commentsEnabled && hoveredButton === 'comment' ? 'text-blue-600' : 'text-gray-400'
+                  commentsEnabled && hoveredButton === 'comment' ? 'text-blue-600 dark:text-blue-400' : 'text-muted'
                 }`} 
               />
               <span className="font-semibold">{commentCount}</span>

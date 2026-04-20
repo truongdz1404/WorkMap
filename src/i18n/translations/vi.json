@@ -10,7 +10,9 @@
     "signIn": "Đăng nhập",
     "languageVi": "VI",
     "languageEn": "EN",
-    "languageLabel": "Ngôn ngữ"
+    "languageLabel": "Ngôn ngữ",
+    "darkMode": "Chế độ tối",
+    "lightMode": "Chế độ sáng"
   },
   "sidebar": {
     "communityStories": "Câu chuyện cộng đồng",

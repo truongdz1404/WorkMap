@@ -1,7 +1,8 @@
 import { User } from 'firebase/auth';
 import { Button } from './ui/button';
-import { LogIn, LogOut, User as UserIcon, Plus, MapPin, Languages } from 'lucide-react';
+import { LogIn, LogOut, User as UserIcon, Plus, MapPin, Languages, Moon, Sun } from 'lucide-react';
 import { useI18n } from '../i18n';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface NavbarProps {
   user: User | null;
@@ -12,10 +13,11 @@ interface NavbarProps {
 
 export default function Navbar({ user, onLogin, onLogout, onAddStory }: NavbarProps) {
   const { language, setLanguage, t } = useI18n();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <div className="absolute left-2 right-2 top-2 z-20 flex flex-wrap items-center gap-2 sm:left-4 sm:right-4 sm:top-4 sm:gap-3 md:left-6 md:right-auto md:top-6 md:flex-nowrap md:gap-4 lg:left-8 lg:top-8">
-      <div className="flex min-w-0 flex-1 items-center gap-3 rounded-full border border-border bg-white/90 px-4 py-2 shadow-lg backdrop-blur-md sm:gap-4 sm:px-5 md:flex-none md:gap-6 md:px-6">
+      <div className="flex min-w-0 flex-1 items-center gap-3 rounded-full border border-border bg-white/90 px-4 py-2 shadow-lg backdrop-blur-md sm:gap-4 sm:px-5 md:flex-none md:gap-6 md:px-6 dark:bg-card/90">
         <div className="flex min-w-0 items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-green-500 to-green-600 shadow-md">
             <MapPin className="h-5 w-5 text-white" />
@@ -38,7 +40,7 @@ export default function Navbar({ user, onLogin, onLogout, onAddStory }: NavbarPr
         <span className="sm:hidden">{t('nav.share')}</span>
       </Button>
 
-      <div className="flex h-10 items-center rounded-full border border-border bg-white/90 p-1 shadow-lg backdrop-blur-md sm:h-11">
+      <div className="flex h-10 items-center rounded-full border border-border bg-white/90 p-1 shadow-lg backdrop-blur-md sm:h-11 dark:bg-card/90">
         <div className="hidden items-center px-2 text-muted sm:flex">
           <Languages className="h-3.5 w-3.5" />
         </div>
@@ -60,10 +62,24 @@ export default function Navbar({ user, onLogin, onLogout, onAddStory }: NavbarPr
         </button>
       </div>
 
+      <Button
+        onClick={toggleTheme}
+        variant="outline"
+        size="icon"
+        className="h-10 w-10 rounded-full border-border bg-white/90 shadow-lg hover:bg-accent sm:h-11 sm:w-11 dark:bg-card/90 dark:hover:bg-accent dark:border-border dark:text-foreground"
+        aria-label={t(`nav.${theme === 'light' ? 'darkMode' : 'lightMode'}`)}
+      >
+        {theme === 'light' ? (
+          <Moon className="h-4 w-4 text-muted" />
+        ) : (
+          <Sun className="h-4 w-4 text-muted" />
+        )}
+      </Button>
+
       {user ? (
-        <div className="flex items-center gap-2 rounded-full border border-border bg-white/90 p-1 pr-2 shadow-lg backdrop-blur-md sm:pr-4">
+        <div className="flex items-center gap-2 rounded-full border border-border bg-white/90 p-1 pr-2 shadow-lg backdrop-blur-md sm:pr-4 dark:bg-card/90">
           {user.photoURL ? (
-            <img src={user.photoURL} alt={user.displayName || ''} className="h-8 w-8 rounded-full border-2 border-white shadow-sm sm:h-9 sm:w-9" referrerPolicy="no-referrer" />
+            <img src={user.photoURL} alt={user.displayName || ''} className="h-8 w-8 rounded-full border-2 border-background shadow-sm sm:h-9 sm:w-9 dark:border-foreground/10" referrerPolicy="no-referrer" />
           ) : (
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent sm:h-9 sm:w-9">
               <UserIcon className="h-4 w-4 text-muted" />
@@ -81,7 +97,7 @@ export default function Navbar({ user, onLogin, onLogout, onAddStory }: NavbarPr
         <Button
           variant="outline"
           onClick={onLogin}
-          className="h-10 rounded-full border-border bg-white px-4 text-[10px] font-bold uppercase tracking-widest shadow-lg hover:bg-accent sm:h-11 sm:px-6 sm:text-xs"
+          className="h-10 rounded-full border-border bg-card px-4 text-[10px] font-bold uppercase tracking-widest shadow-lg hover:bg-accent sm:h-11 sm:px-6 sm:text-xs dark:bg-card/90 dark:hover:bg-accent"
         >
           <LogIn className="mr-1 h-4 w-4 sm:mr-2" /> {t('nav.signIn')}
         </Button>

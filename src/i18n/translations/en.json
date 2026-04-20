@@ -10,7 +10,9 @@
     "signIn": "Sign In",
     "languageVi": "VI",
     "languageEn": "EN",
-    "languageLabel": "Language"
+    "languageLabel": "Language",
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode"
   },
   "sidebar": {
     "communityStories": "Community Stories",

@@ -53,7 +53,7 @@ export default function StoryForm({ latitude, longitude, onSubmit, onClose, isSu
   };
 
   return (
-    <div className="max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-2xl border border-border bg-white p-4 shadow-2xl sm:p-6 md:max-w-[620px] md:p-8">
+    <div className="max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-2xl border border-border bg-card p-4 shadow-2xl sm:p-6 md:max-w-[620px] md:p-8">
       <div className="mb-5 flex items-start justify-between sm:mb-8">
         <div>
           <h2 className="text-xl font-serif font-bold text-foreground sm:text-2xl">{t('storyForm.title')}</h2>
@@ -129,7 +129,7 @@ export default function StoryForm({ latitude, longitude, onSubmit, onClose, isSu
         </div>
 
         <div className="space-y-3 rounded-2xl border border-border bg-accent/20 p-3 sm:p-4">
-          <div className="flex items-center justify-between gap-3 rounded-xl bg-white p-3 border border-border/70">
+          <div className="flex items-center justify-between gap-3 rounded-xl bg-card p-3 border border-border/70">
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-foreground">{t('storyForm.postAnonymousTitle')}</p>
               <p className="text-[10px] font-bold text-foreground/55">{t('storyForm.postAnonymousDesc')}</p>
@@ -139,15 +139,15 @@ export default function StoryForm({ latitude, longitude, onSubmit, onClose, isSu
               role="switch"
               aria-checked={isAnonymous}
               onClick={() => setIsAnonymous((prev) => !prev)}
-              className={`h-7 w-12 rounded-full border-2 transition-colors ${isAnonymous ? 'border-primary bg-primary/90' : 'border-border bg-white'}`}
+              className={`h-7 w-12 rounded-full border-2 transition-colors ${isAnonymous ? 'border-primary bg-primary/90' : 'border-border bg-accent'}`}
             >
               <span
-                className={`block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${isAnonymous ? 'translate-x-5' : 'translate-x-0'}`}
+                className={`block h-5 w-5 rounded-full bg-card shadow-sm transition-transform ${isAnonymous ? 'translate-x-5' : 'translate-x-0'}`}
               />
             </button>
           </div>
 
-          <div className="flex items-center justify-between gap-3 rounded-xl bg-white p-3 border border-border/70">
+          <div className="flex items-center justify-between gap-3 rounded-xl bg-card p-3 border border-border/70">
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-foreground">{t('storyForm.allowCommentsTitle')}</p>
               <p className="text-[10px] font-bold text-foreground/55">{t('storyForm.allowCommentsDesc')}</p>
@@ -157,17 +157,17 @@ export default function StoryForm({ latitude, longitude, onSubmit, onClose, isSu
               role="switch"
               aria-checked={allowComments}
               onClick={() => setAllowComments((prev) => !prev)}
-              className={`h-7 w-12 rounded-full border-2 transition-colors ${allowComments ? 'border-primary bg-primary/90' : 'border-border bg-white'}`}
+              className={`h-7 w-12 rounded-full border-2 transition-colors ${allowComments ? 'border-primary bg-primary/90' : 'border-border bg-accent'}`}
             >
               <span
-                className={`block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${allowComments ? 'translate-x-5' : 'translate-x-0'}`}
+                className={`block h-5 w-5 rounded-full bg-card shadow-sm transition-transform ${allowComments ? 'translate-x-5' : 'translate-x-0'}`}
               />
             </button>
           </div>
         </div>
 
-        <div className="sticky bottom-0 flex gap-3 bg-white/95 pt-2 pb-1 backdrop-blur supports-[backdrop-filter]:bg-white/80 sm:static sm:bg-transparent sm:pt-4 sm:pb-0">
-          <Button variant="outline" className="h-11 flex-1 rounded-full border-border text-[10px] font-black uppercase tracking-widest hover:bg-accent sm:h-12" onClick={onClose} type="button">
+        <div className="sticky bottom-0 flex gap-3 bg-card/95 pt-2 pb-1 backdrop-blur supports-[backdrop-filter]:bg-card/80 sm:static sm:bg-transparent sm:pt-4 sm:pb-0">
+          <Button variant="outline" className="h-11 flex-1 rounded-full border-border text-[10px] font-black uppercase tracking-widest hover:bg-accent dark:hover:bg-accent sm:h-12" onClick={onClose} type="button">
             {t('storyForm.cancel')}
           </Button>
           <Button className="h-11 flex-1 rounded-full bg-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary/90 sm:h-12" type="submit" disabled={isSubmitting}>

@@ -31,9 +31,25 @@
 }
 
 .dark {
-  --background: 0 0% 10%;
-  --foreground: 0 0% 90%;
-  /* ... simplified dark mode for now ... */
+  --background: 0 0% 8%; /* #141414 */
+  --foreground: 0 0% 92%; /* #eaeaea */
+  --card: 0 0% 15%; /* #262626 */
+  --card-foreground: 0 0% 92%;
+  --popover: 0 0% 15%;
+  --popover-foreground: 0 0% 92%;
+  --primary: 178 16% 55%; /* #7a9d9c */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 18 64% 65%; /* #e59d74 */
+  --secondary-foreground: 0 0% 100%;
+  --muted: 0 0% 55%; /* #8c8c8c - lighter gray */
+  --muted-foreground: 0 0% 78%;
+  --accent: 0 0% 25%; /* #404040 */
+  --accent-foreground: 178 16% 55%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 25%; /* #404040 */
+  --input: 0 0% 25%;
+  --ring: 178 16% 55%;
 }
 
 body {
@@ -50,12 +66,24 @@ body {
       radial-gradient(circle at 80% 50%, #e9e2d7 0%, transparent 30%);
 }
 
+.dark .leaflet-container {
+  background-color: #1a1a1a;
+  background-image: 
+      radial-gradient(circle at 10% 20%, #2a2a2a 0%, transparent 40%),
+      radial-gradient(circle at 80% 50%, #2a2a2a 0%, transparent 30%);
+}
+
 .leaflet-popup-content-wrapper {
   border-radius: 12px;
   padding: 0;
   overflow: hidden;
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
   border: 1px solid #e8e2d9;
+}
+
+.dark .leaflet-popup-content-wrapper {
+  border: 1px solid #404040;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
 }
 
 .leaflet-popup-content {

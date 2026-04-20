@@ -19,7 +19,7 @@
   --secondary: 18 64% 59%; /* #d97d54 */
   --secondary-foreground: 0 0% 100%;
   --muted: 38 6% 53%; /* #8c8881 */
-  --muted-foreground: 38 6% 40%;
+  --muted-foreground: 38 6% 28%;
   --accent: 40 20% 94%; /* #f2eee8 */
   --accent-foreground: 178 16% 42%;
   --destructive: 0 84.2% 60.2%;
@@ -128,7 +128,7 @@ body {
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
     --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
+    --muted-foreground: oklch(0.35 0 0);
     --accent: oklch(0.97 0 0);
     --accent-foreground: oklch(0.205 0 0);
     --destructive: oklch(0.577 0.245 27.325);
@@ -149,6 +149,7 @@ body {
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+    --text-muted-override: oklch(0.22 0 0);
 }
 
 .dark {
@@ -183,6 +184,13 @@ body {
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+    --text-muted-override: oklch(0.82 0 0);
+}
+
+@layer utilities {
+  .text-muted {
+    color: var(--text-muted-override) !important;
+  }
 }
 
 @layer base {

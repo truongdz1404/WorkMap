@@ -40,15 +40,15 @@ export default function Navbar({ user, onLogin, onLogout, onAddStory }: NavbarPr
         <span className="sm:hidden">{t('nav.share')}</span>
       </Button>
 
-      <div className="flex h-10 items-center rounded-full border border-border bg-white/90 p-1 shadow-lg backdrop-blur-md sm:h-11 dark:bg-card/90">
-        <div className="hidden items-center px-2 text-muted sm:flex">
+      <div className="flex h-10 items-center rounded-full border border-border bg-white/90 p-1 text-foreground shadow-lg backdrop-blur-md sm:h-11 dark:bg-card/90">
+        <div className="hidden items-center px-2 text-foreground/70 sm:flex">
           <Languages className="h-3.5 w-3.5" />
         </div>
         <button
           type="button"
           aria-label={`${t('nav.languageLabel')}: ${t('nav.languageVi')}`}
           onClick={() => setLanguage('vi')}
-          className={`h-8 rounded-full px-2 text-[10px] font-black tracking-widest transition-colors sm:h-9 sm:px-3 ${language === 'vi' ? 'bg-primary text-white' : 'text-muted hover:text-primary'}`}
+          className={`h-8 rounded-full px-2 text-[10px] font-black tracking-widest transition-colors sm:h-9 sm:px-3 ${language === 'vi' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-foreground/75 hover:bg-accent/70 hover:text-foreground'}`}
         >
           {t('nav.languageVi')}
         </button>
@@ -56,7 +56,7 @@ export default function Navbar({ user, onLogin, onLogout, onAddStory }: NavbarPr
           type="button"
           aria-label={`${t('nav.languageLabel')}: ${t('nav.languageEn')}`}
           onClick={() => setLanguage('en')}
-          className={`h-8 rounded-full px-2 text-[10px] font-black tracking-widest transition-colors sm:h-9 sm:px-3 ${language === 'en' ? 'bg-primary text-white' : 'text-muted hover:text-primary'}`}
+          className={`h-8 rounded-full px-2 text-[10px] font-black tracking-widest transition-colors sm:h-9 sm:px-3 ${language === 'en' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-foreground/75 hover:bg-accent/70 hover:text-foreground'}`}
         >
           {t('nav.languageEn')}
         </button>
@@ -77,7 +77,7 @@ export default function Navbar({ user, onLogin, onLogout, onAddStory }: NavbarPr
       </Button>
 
       {user ? (
-        <div className="flex items-center gap-2 rounded-full border border-border bg-white/90 p-1 pr-2 shadow-lg backdrop-blur-md sm:pr-4 dark:bg-card/90">
+        <div className="flex items-center gap-2 rounded-full border border-border bg-white/90 p-1 pr-2 text-foreground shadow-lg backdrop-blur-md sm:pr-4 dark:bg-card/90">
           {user.photoURL ? (
             <img src={user.photoURL} alt={user.displayName || ''} className="h-8 w-8 rounded-full border-2 border-background shadow-sm sm:h-9 sm:w-9 dark:border-foreground/10" referrerPolicy="no-referrer" />
           ) : (
@@ -86,10 +86,15 @@ export default function Navbar({ user, onLogin, onLogout, onAddStory }: NavbarPr
             </div>
           )}
           <div className="hidden md:block">
-            <p className="text-[9px] uppercase font-black leading-none mb-1">{t('nav.welcome')}</p>
+            <p className="mb-1 text-[9px] font-black leading-none text-foreground/65 uppercase">{t('nav.welcome')}</p>
             <p className="text-[11px] font-bold text-foreground leading-none">{user.displayName?.split(' ')[0]}</p>
           </div>
-          <Button variant="ghost" size="icon" onClick={onLogout} className="h-8 w-8 rounded-full hover:bg-red-50 hover:text-red-600 sm:ml-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onLogout}
+            className="h-8 w-8 rounded-full text-foreground/70 hover:bg-destructive/15 hover:text-destructive dark:hover:bg-destructive/25 sm:ml-2"
+          >
             <LogOut className="h-3.5 w-3.5" />
           </Button>
         </div>

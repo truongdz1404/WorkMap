@@ -80,8 +80,8 @@ export default function StoryForm({ latitude, longitude, onSubmit, onClose, isSu
         <div className="space-y-1.5 sm:space-y-2">
           <label className="text-[10px] font-black uppercase tracking-widest text-foreground/70">{t('storyForm.categoryLabel')}</label>
           <Select value={category} onValueChange={(v) => setCategory(v as Category)}>
-            <SelectTrigger className="bg-accent/30 border-border h-11 font-bold">
-              <SelectValue placeholder={t('storyForm.selectCategory')} />
+            <SelectTrigger className="bg-accent/30 border-border h-11 font-bold text-foreground data-placeholder:text-foreground/60 dark:bg-accent/50 dark:border-border/50">
+              <SelectValue className="text-foreground" placeholder={t('storyForm.selectCategory')} />
             </SelectTrigger>
             <SelectContent>
               {CATEGORIES.map((cat) => (
@@ -139,10 +139,10 @@ export default function StoryForm({ latitude, longitude, onSubmit, onClose, isSu
               role="switch"
               aria-checked={isAnonymous}
               onClick={() => setIsAnonymous((prev) => !prev)}
-              className={`h-7 w-12 rounded-full border-2 transition-colors ${isAnonymous ? 'border-primary bg-primary/90' : 'border-border bg-accent'}`}
+              className={`h-7 w-12 rounded-full border-2 transition-colors ${isAnonymous ? 'border-primary bg-primary/90' : 'border-border bg-accent dark:border-muted dark:bg-muted/40'}`}
             >
               <span
-                className={`block h-5 w-5 rounded-full bg-card shadow-sm transition-transform ${isAnonymous ? 'translate-x-5' : 'translate-x-0'}`}
+                className={`block h-5 w-5 rounded-full shadow-sm transition-transform ${isAnonymous ? 'translate-x-5 bg-primary-foreground' : 'translate-x-0 bg-muted-foreground dark:bg-foreground/90'}`}
               />
             </button>
           </div>
@@ -157,17 +157,17 @@ export default function StoryForm({ latitude, longitude, onSubmit, onClose, isSu
               role="switch"
               aria-checked={allowComments}
               onClick={() => setAllowComments((prev) => !prev)}
-              className={`h-7 w-12 rounded-full border-2 transition-colors ${allowComments ? 'border-primary bg-primary/90' : 'border-border bg-accent'}`}
+              className={`h-7 w-12 rounded-full border-2 transition-colors ${allowComments ? 'border-primary bg-primary/90' : 'border-border bg-accent dark:border-muted dark:bg-muted/40'}`}
             >
               <span
-                className={`block h-5 w-5 rounded-full bg-card shadow-sm transition-transform ${allowComments ? 'translate-x-5' : 'translate-x-0'}`}
+                className={`block h-5 w-5 rounded-full shadow-sm transition-transform ${allowComments ? 'translate-x-5 bg-primary-foreground' : 'translate-x-0 bg-muted-foreground dark:bg-foreground/90'}`}
               />
             </button>
           </div>
         </div>
 
         <div className="sticky bottom-0 flex gap-3 bg-card/95 pt-2 pb-1 backdrop-blur supports-[backdrop-filter]:bg-card/80 sm:static sm:bg-transparent sm:pt-4 sm:pb-0">
-          <Button variant="outline" className="h-11 flex-1 rounded-full border-border text-[10px] font-black uppercase tracking-widest hover:bg-accent dark:hover:bg-accent sm:h-12" onClick={onClose} type="button">
+          <Button variant="outline" className="h-11 flex-1 rounded-full border-border text-foreground text-[10px] font-black uppercase tracking-widest hover:bg-accent dark:hover:bg-accent/60 dark:border-border/60 dark:text-foreground sm:h-12" onClick={onClose} type="button">
             {t('storyForm.cancel')}
           </Button>
           <Button className="h-11 flex-1 rounded-full bg-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary/90 sm:h-12" type="submit" disabled={isSubmitting}>

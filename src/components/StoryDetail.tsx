@@ -2,7 +2,7 @@ import { Story } from '../types';
 import { CATEGORIES, EMOTIONS } from '../constants';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { ThumbsUp, ThumbsDown, Share2, Clock, User, ArrowLeft, MessageCircle, Send } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Share2, Clock, User, ArrowLeft, MessageCircle, Send, MessageCircleOff } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
@@ -24,6 +24,7 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const hasUpvoted = currentUserId && story.upvotedBy?.includes(currentUserId);
   const hasDownvoted = currentUserId && story.downvotedBy?.includes(currentUserId);
+  const commentsEnabled = story.allowComments !== false;
 
   const handleAddComment = async () => {
     if (!commentText.trim() || !onAddComment) return;
@@ -135,7 +136,7 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
           </p>
         </div> */}
 
-        {story.comments && story.comments.length > 0 && (
+        {commentsEnabled && story.comments && story.comments.length > 0 && (
           <div className="mt-10 space-y-4 sm:mt-16">
             <div className="flex items-center gap-2">
               <MessageCircle className="w-5 h-5 text-primary" />
@@ -162,34 +163,43 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
           </div>
         )}
 
-        <div className="mt-8 rounded-2xl border border-border/50 bg-accent/20 p-4 sm:mt-12 sm:p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <MessageCircle className="w-5 h-5 text-primary" />
-            <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">Add a Comment</h3>
-          </div>
-          <div className="space-y-3">
-            <Textarea
-              placeholder="Share your thoughts..."
-              className="min-h-[80px] bg-white border-border focus-visible:ring-primary p-3"
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              maxLength={500}
-            />
-            <div className="flex items-center justify-between">
-              <p className="text-[9px] text-muted font-bold uppercase tracking-widest">
-                {commentText.length} / 500 characters
-              </p>
-              <Button
-                onClick={handleAddComment}
-                disabled={!commentText.trim() || isSubmittingComment}
-                className="rounded-full gap-2 text-[10px] font-black uppercase tracking-widest bg-primary hover:bg-primary/90"
-              >
-                <Send className="w-3 h-3" />
-                {isSubmittingComment ? 'Posting...' : 'Comment'}
-              </Button>
+        {commentsEnabled ? (
+          <div className="mt-8 rounded-2xl border border-border/50 bg-accent/20 p-4 sm:mt-12 sm:p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <MessageCircle className="w-5 h-5 text-primary" />
+              <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">Add a Comment</h3>
+            </div>
+            <div className="space-y-3">
+              <Textarea
+                placeholder="Share your thoughts..."
+                className="min-h-[80px] bg-white border-border focus-visible:ring-primary p-3"
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                maxLength={500}
+              />
+              <div className="flex items-center justify-between">
+                <p className="text-[9px] text-muted font-bold uppercase tracking-widest">
+                  {commentText.length} / 500 characters
+                </p>
+                <Button
+                  onClick={handleAddComment}
+                  disabled={!commentText.trim() || isSubmittingComment}
+                  className="rounded-full gap-2 text-[10px] font-black uppercase tracking-widest bg-primary hover:bg-primary/90"
+                >
+                  <Send className="w-3 h-3" />
+                  {isSubmittingComment ? 'Posting...' : 'Comment'}
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="mt-8 rounded-2xl border border-border/60 bg-muted/20 p-4 sm:mt-12 sm:p-6">
+            <div className="flex items-center gap-2 text-muted">
+              <MessageCircleOff className="w-5 h-5" />
+              <h3 className="text-sm font-bold uppercase tracking-widest">Comments are turned off for this story</h3>
+            </div>
+          </div>
+        )}
       </div>
     </motion.div>
   );

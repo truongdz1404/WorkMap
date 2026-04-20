@@ -10,9 +10,20 @@ import { X } from 'lucide-react';
 interface StoryFormProps {
   latitude: number;
   longitude: number;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: StoryFormData) => void;
   onClose: () => void;
   isSubmitting: boolean;
+}
+
+interface StoryFormData {
+  title: string;
+  content: string;
+  category: Category;
+  emotion?: Emotion;
+  latitude: number;
+  longitude: number;
+  isAnonymous: boolean;
+  allowComments: boolean;
 }
 
 export default function StoryForm({ latitude, longitude, onSubmit, onClose, isSubmitting }: StoryFormProps) {
@@ -20,6 +31,8 @@ export default function StoryForm({ latitude, longitude, onSubmit, onClose, isSu
   const [content, setContent] = useState('');
   const [category, setCategory] = useState<Category>('other');
   const [emotion, setEmotion] = useState<Emotion | 'none'>('none');
+  const [isAnonymous, setIsAnonymous] = useState(true);
+  const [allowComments, setAllowComments] = useState(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +45,8 @@ export default function StoryForm({ latitude, longitude, onSubmit, onClose, isSu
       emotion: emotion === 'none' ? undefined : emotion,
       latitude,
       longitude,
+      isAnonymous,
+      allowComments,
     });
   };
 
@@ -109,6 +124,44 @@ export default function StoryForm({ latitude, longitude, onSubmit, onClose, isSu
           <p className="text-[9px] font-bold text-right uppercase tracking-widest text-foreground/45">
             {content.length} / 5000 characters
           </p>
+        </div>
+
+        <div className="space-y-3 rounded-2xl border border-border bg-accent/20 p-3 sm:p-4">
+          <div className="flex items-center justify-between gap-3 rounded-xl bg-white p-3 border border-border/70">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-foreground">Post anonymously</p>
+              <p className="text-[10px] font-bold text-foreground/55">Hide your profile and name from this story.</p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={isAnonymous}
+              onClick={() => setIsAnonymous((prev) => !prev)}
+              className={`h-7 w-12 rounded-full border-2 transition-colors ${isAnonymous ? 'border-primary bg-primary/90' : 'border-border bg-white'}`}
+            >
+              <span
+                className={`block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${isAnonymous ? 'translate-x-5' : 'translate-x-0'}`}
+              />
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between gap-3 rounded-xl bg-white p-3 border border-border/70">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-foreground">Allow comments</p>
+              <p className="text-[10px] font-bold text-foreground/55">Let others discuss this story.</p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={allowComments}
+              onClick={() => setAllowComments((prev) => !prev)}
+              className={`h-7 w-12 rounded-full border-2 transition-colors ${allowComments ? 'border-primary bg-primary/90' : 'border-border bg-white'}`}
+            >
+              <span
+                className={`block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${allowComments ? 'translate-x-5' : 'translate-x-0'}`}
+              />
+            </button>
+          </div>
         </div>
 
         <div className="sticky bottom-0 flex gap-3 bg-white/95 pt-2 pb-1 backdrop-blur supports-[backdrop-filter]:bg-white/80 sm:static sm:bg-transparent sm:pt-4 sm:pb-0">

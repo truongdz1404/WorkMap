@@ -16,6 +16,8 @@ export interface Story {
   content: string;
   category: Category;
   emotion?: Emotion;
+  isAnonymous?: boolean;
+  allowComments?: boolean;
   latitude: number;
   longitude: number;
   createdAt: number;

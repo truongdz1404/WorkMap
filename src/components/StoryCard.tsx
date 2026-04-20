@@ -26,6 +26,7 @@ export default function StoryCard({ story, onClick, onUpvote, onDownvote, onComm
   const upvoteCount = story.upvotedBy?.length || 0;
   const downvoteCount = story.downvotedBy?.length || 0;
   const commentCount = story.comments?.length || 0;
+  const commentsEnabled = story.allowComments !== false;
 
   return (
     <Card
@@ -94,15 +95,17 @@ export default function StoryCard({ story, onClick, onUpvote, onDownvote, onComm
             <button
               onClick={(e) => {
                 e.stopPropagation();
+                if (!commentsEnabled) return;
                 onComment?.(story.id);
               }}
               onMouseEnter={() => setHoveredButton('comment')}
               onMouseLeave={() => setHoveredButton(null)}
-              className="flex items-center gap-1.5 px-2 py-1.5 rounded-md transition-all hover:bg-blue-50 ml-1"
+              disabled={!commentsEnabled}
+              className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md transition-all ml-1 ${commentsEnabled ? 'hover:bg-blue-50' : 'opacity-45 cursor-not-allowed'}`}
             >
               <MessageCircle 
                 className={`w-4 h-4 transition-colors ${
-                  hoveredButton === 'comment' ? 'text-blue-600' : 'text-gray-400'
+                  commentsEnabled && hoveredButton === 'comment' ? 'text-blue-600' : 'text-gray-400'
                 }`} 
               />
               <span className="font-semibold">{commentCount}</span>

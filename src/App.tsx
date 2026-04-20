@@ -12,6 +12,7 @@ import { AlertCircle, PanelBottomOpen, PanelBottomClose } from 'lucide-react';
 
 export default function App() {
   const MOBILE_BREAKPOINT = 700;
+  const DEFAULT_ANONYMOUS_AVATAR = '/avatars/anonymous-default.svg';
   const [user, setUser] = useState<User | null>(null);
   const [stories, setStories] = useState<Story[]>([]);
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
@@ -158,15 +159,19 @@ export default function App() {
     setIsSubmitting(true);
     setError(null);
     try {
+      const anonymousAlias = `Ẩn danh #${Math.floor(1000 + Math.random() * 9000)}`;
+
       await addDoc(collection(db, 'stories'), {
         ...data,
         createdAt: Date.now(),
         likesCount: 0,
         upvotedBy: [],
         downvotedBy: [],
-        ...(user ? { authorId: user.uid } : {}),
-        authorName: user?.displayName || 'Anonymous',
-        authorImage: user?.photoURL || undefined,
+        ...(user && !data.isAnonymous ? { authorId: user.uid } : {}),
+        authorName: data.isAnonymous ? anonymousAlias : (user?.displayName || 'Anonymous'),
+        ...(data.isAnonymous
+          ? { authorImage: DEFAULT_ANONYMOUS_AVATAR }
+          : (user?.photoURL ? { authorImage: user.photoURL } : {})),
         comments: [],
       });
       setIsAddingStory(false);
@@ -234,13 +239,18 @@ export default function App() {
       setError("Please login to comment");
       return;
     }
+    const story = stories.find((s) => s.id === storyId);
+    if (story?.allowComments === false) {
+      setError("Comments are disabled for this story");
+      return;
+    }
     try {
       const commentId = Date.now().toString();
       const newComment = {
         id: commentId,
         authorId: user.uid,
         authorName: user.displayName || 'Anonymous',
-        authorImage: user.photoURL || undefined,
+        ...(user.photoURL ? { authorImage: user.photoURL } : {}),
         content: commentText,
         createdAt: Date.now(),
       };

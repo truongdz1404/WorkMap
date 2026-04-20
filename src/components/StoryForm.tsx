@@ -102,12 +102,12 @@ export default function StoryForm({ latitude, longitude, onSubmit, onClose, isSu
                 type="button"
                 onClick={() => setEmotion(emotion === emo.value ? 'none' : emo.value)}
                 className={`flex flex-col items-center justify-center rounded-xl border-2 p-2.5 transition-all sm:p-4 ${emotion === emo.value
-                    ? 'border-primary bg-primary/15 shadow-md'
-                    : 'border-border bg-white hover:border-primary/30 hover:bg-accent/30'
+                    ? 'border-primary bg-primary/15 text-foreground shadow-md dark:bg-primary/25'
+                    : 'border-border bg-white text-foreground hover:border-primary/30 hover:bg-accent/30 dark:border-border/60 dark:bg-accent/70 dark:hover:bg-accent'
                   }`}
               >
                 <span className="mb-1 text-xl sm:text-2xl">{emo.icon}</span>
-                <span className="text-[8px] font-black tracking-widest text-foreground leading-tight">{t(`emotions.${emo.value}`)}</span>
+                <span className="text-[8px] font-black leading-tight tracking-widest text-foreground dark:text-foreground/95">{t(`emotions.${emo.value}`)}</span>
               </button>
             ))}
           </div>

@@ -1,0 +1,115 @@
+{
+  "nav": {
+    "brand": "WorkMap",
+    "exploreMap": "Khám phá bản đồ",
+    "insights": "Góc nhìn",
+    "guidebook": "Cẩm nang",
+    "shareStory": "Chia sẻ câu chuyện",
+    "share": "Chia sẻ",
+    "welcome": "Xin chào",
+    "signIn": "Đăng nhập",
+    "languageVi": "VI",
+    "languageEn": "EN",
+    "languageLabel": "Ngôn ngữ",
+    "darkMode": "Chế độ tối",
+    "lightMode": "Chế độ sáng"
+  },
+  "sidebar": {
+    "communityStories": "Câu chuyện cộng đồng",
+    "search": "Tìm kiếm...",
+    "searchStories": "Tìm câu chuyện...",
+    "all": "Tất cả",
+    "filterByCategory": "Lọc theo chủ đề",
+    "recentStories": "Câu chuyện gần đây",
+    "loadingMore": "Đang tải thêm...",
+    "noStoriesFound": "Không tìm thấy câu chuyện phù hợp.",
+    "seedExampleData": "Tạo dữ liệu mẫu",
+    "footerNote": "Học từ hành trình nơi công sở. Hỗ trợ đăng ẩn danh."
+  },
+  "storyForm": {
+    "title": "Chia sẻ câu chuyện của bạn",
+    "location": "Vị trí",
+    "titleLabel": "Tiêu đề",
+    "titlePlaceholder": "Một tiêu đề ngắn, thu hút",
+    "categoryLabel": "Chủ đề",
+    "selectCategory": "Chọn chủ đề",
+    "emotionLabel": "Bạn cảm thấy thế nào?",
+    "storyLabel": "Câu chuyện của bạn",
+    "storyPlaceholder": "Điều gì đã xảy ra? Bạn đã xử lý thế nào?",
+    "charactersCount": "{count} / 5000 ký tự",
+    "postAnonymousTitle": "Đăng ẩn danh",
+    "postAnonymousDesc": "Ẩn hồ sơ và tên của bạn trong câu chuyện này.",
+    "allowCommentsTitle": "Cho phép bình luận",
+    "allowCommentsDesc": "Cho phép mọi người thảo luận câu chuyện này.",
+    "cancel": "Hủy",
+    "posting": "Đang đăng...",
+    "postStory": "Đăng câu chuyện"
+  },
+  "storyDetail": {
+    "share": "Chia sẻ",
+    "author": "Tác giả",
+    "commentsTitle": "Bình luận ({count})",
+    "mostRelevant": "Phù hợp nhất",
+    "reply": "Trả lời",
+    "writeComment": "Viết bình luận...",
+    "noCommentsYet": "Chưa có bình luận nào.",
+    "addComment": "Thêm bình luận",
+    "shareThoughts": "Chia sẻ suy nghĩ của bạn...",
+    "commentCharacters": "{count} / 500 ký tự",
+    "posting": "Đang gửi...",
+    "comment": "Bình luận",
+    "commentsOff": "Bình luận đã tắt cho câu chuyện này",
+    "anonymous": "Ẩn danh"
+  },
+  "app": {
+    "errorFailedLoad": "Không thể tải câu chuyện. Vui lòng kiểm tra kết nối.",
+    "errorLoginCancelled": "Đăng nhập đã bị hủy. Vui lòng thử lại.",
+    "errorFailedPost": "Không thể đăng câu chuyện. Bạn có thể cần đăng nhập.",
+    "errorPleaseLoginVote": "Vui lòng đăng nhập để bình chọn",
+    "errorPleaseLoginComment": "Vui lòng đăng nhập để bình luận",
+    "errorCommentsDisabled": "Bình luận đã tắt cho câu chuyện này",
+    "errorFailedAddComment": "Không thể thêm bình luận",
+    "resizeSidebar": "Thay đổi kích thước thanh bên",
+    "hideSidebar": "Ẩn thanh bên",
+    "showSidebar": "Hiện thanh bên",
+    "stories": "Câu chuyện",
+    "anonymousName": "Ẩn danh",
+    "anonymousAlias": "Ẩn danh #{id}"
+  },
+  "categories": {
+    "conflict": "Xung đột",
+    "communication": "Giao tiếp",
+    "onboarding": "Hội nhập",
+    "culture": "Văn hóa",
+    "technical": "Kỹ thuật",
+    "other": "Khác"
+  },
+  "emotions": {
+    "stress": "Căng thẳng",
+    "confusion": "Bối rối",
+    "success": "Thành công",
+    "happy": "Vui vẻ",
+    "neutral": "Trung lập",
+    "frustrated": "Khó chịu"
+  },
+  "map": {
+    "storyAuthor": "Tác giả câu chuyện"
+  },
+  "seed": {
+    "story1": {
+      "title": "Đứt gãy giao tiếp trong team remote",
+      "content": "Team của mình gặp khó khăn khi giao tiếp bất đồng bộ. Bọn mình bắt đầu dùng một tài liệu chung để cập nhật hằng ngày và giảm hẳn hiểu nhầm. Điểm mấu chốt là nêu rõ kỳ vọng và deadline.",
+      "author": "Minh Thu"
+    },
+    "story2": {
+      "title": "Ngày đầu onboarding suôn sẻ",
+      "content": "Mình rất lo lắng trong ngày đầu làm intern. Nhưng team có checklist rõ ràng và phân một buddy hỗ trợ, nên mình thấy được chào đón và bắt nhịp rất nhanh. Rất nên áp dụng cho startup.",
+      "author": "Hoang Nam"
+    },
+    "story3": {
+      "title": "Vượt qua mâu thuẫn giữa các phòng ban",
+      "content": "Việc xử lý khác biệt lợi ích giữa các bộ phận khá áp lực. Mình học được rằng minh bạch và tài liệu hóa là chìa khóa. Luôn lưu lại trao đổi và cố gắng hiểu động lực của từng bên liên quan.",
+      "author": "Anh Tuan"
+    }
+  }
+}

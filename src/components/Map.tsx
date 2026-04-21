@@ -5,6 +5,7 @@ import { CATEGORIES, MAP_CENTER, DEFAULT_ZOOM } from '../constants';
 import { MapPin } from 'lucide-react';
 import { renderToString } from 'react-dom/server';
 import { useEffect } from 'react';
+import { useI18n } from '../i18n';
 
 interface MapProps {
   stories: Story[];
@@ -14,7 +15,7 @@ interface MapProps {
   layoutSignal?: string;
 }
 
-const createCustomIcon = (story: Story) => {
+const createCustomIcon = (story: Story, authorAltText: string) => {
   const { category, authorImage } = story;
   const cat = CATEGORIES.find(c => c.value === category) || CATEGORIES[CATEGORIES.length - 1];
   const iconHtml = renderToString(
@@ -22,7 +23,7 @@ const createCustomIcon = (story: Story) => {
       {authorImage ? (
         <img
           src={authorImage}
-          alt="Story author"
+          alt={authorAltText}
           className="w-8 h-8 rounded-full object-cover shadow-lg border-2 border-white"
         />
       ) : (
@@ -73,6 +74,8 @@ function MapSizeSync({ layoutSignal }: { layoutSignal?: string }) {
 }
 
 export default function Map({ stories, onSelectStory, onMapClick, selectedStoryId, layoutSignal }: MapProps) {
+  const { language, t } = useI18n();
+
   return (
     <MapContainer 
       center={MAP_CENTER} 
@@ -82,14 +85,14 @@ export default function Map({ stories, onSelectStory, onMapClick, selectedStoryI
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-   url="https://mt1.google.com/vt/lyrs=m&hl=vi&x={x}&y={y}&z={z}"
+   url={`https://mt1.google.com/vt/lyrs=m&hl=${language}&x={x}&y={y}&z={z}`}
       />
       
       {stories.map((story) => (
         <Marker 
           key={story.id} 
           position={[story.latitude, story.longitude]}
-          icon={createCustomIcon(story)}
+          icon={createCustomIcon(story, t('map.storyAuthor'))}
           eventHandlers={{
             click: () => onSelectStory(story),
           }}

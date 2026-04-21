@@ -1,12 +1,21 @@
 import { Story } from '../types';
 import { CATEGORIES, EMOTIONS } from '../constants';
 import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { ThumbsUp, ThumbsDown, Share2, Clock, User, ArrowLeft, MessageCircle, Send, MessageCircleOff } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { motion, AnimatePresence } from 'motion/react';
+import {
+  ThumbsUp,
+  ThumbsDown,
+  Share2,
+  User,
+  ArrowLeft,
+  MessageCircle,
+  Send,
+  MessageCircleOff,
+  MoreHorizontal,
+} from 'lucide-react';
+import { motion } from 'motion/react';
 import { useState } from 'react';
 import { Textarea } from './ui/textarea';
+import { useI18n } from '../i18n';
 
 interface StoryDetailProps {
   story: Story;
@@ -18,13 +27,18 @@ interface StoryDetailProps {
 }
 
 export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAddComment, currentUserId }: StoryDetailProps) {
-  const category = CATEGORIES.find(c => c.value === story.category);
-  const emotion = EMOTIONS.find(e => e.value === story.emotion);
+  const { t, formatRelativeTime } = useI18n();
+  const category = CATEGORIES.find((c) => c.value === story.category);
+  const emotion = EMOTIONS.find((e) => e.value === story.emotion);
   const [commentText, setCommentText] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
-  const hasUpvoted = currentUserId && story.upvotedBy?.includes(currentUserId);
-  const hasDownvoted = currentUserId && story.downvotedBy?.includes(currentUserId);
+
+  const hasUpvoted = !!(currentUserId && story.upvotedBy?.includes(currentUserId));
+  const hasDownvoted = !!(currentUserId && story.downvotedBy?.includes(currentUserId));
   const commentsEnabled = story.allowComments !== false;
+  const upvoteCount = story.upvotedBy?.length || 0;
+  const downvoteCount = story.downvotedBy?.length || 0;
+  const totalComments = story.comments?.length || 0;
 
   const handleAddComment = async () => {
     if (!commentText.trim() || !onAddComment) return;
@@ -43,164 +57,168 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
       animate={{ x: 0 }}
       exit={{ x: '100%' }}
       transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-      className="fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-border bg-white shadow-2xl md:w-[500px]"
+      className="fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-border bg-card text-foreground shadow-2xl md:w-[500px]"
     >
-      <div className="flex items-center justify-between border-b border-border bg-background/50 p-3 backdrop-blur-sm sm:p-4 md:p-6">
-        <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full hover:bg-red-50 hover:text-red-600">
-          <ArrowLeft className="w-5 h-5" />
+      <div className="flex items-center justify-between border-b border-border bg-card px-3 py-2 sm:px-4 sm:py-3">
+        <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full text-muted-foreground hover:bg-accent hover:text-foreground">
+          <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div className="flex gap-1.5 sm:gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="rounded-full border-border px-2 text-[10px] font-black uppercase tracking-widest sm:gap-2 sm:px-3"
-            onClick={() => onUpvote(story.id)}
-          >
-            <ThumbsUp className={`w-4 h-4 transition-colors ${hasUpvoted ? 'text-green-600' : 'text-gray-400'}`} /> {story.upvotedBy?.length || 0}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="rounded-full border-border px-2 text-[10px] font-black uppercase tracking-widest sm:gap-2 sm:px-3"
-            onClick={() => onDownvote(story.id)}
-          >
-            <ThumbsDown className={`w-4 h-4 transition-colors ${hasDownvoted ? 'text-red-600' : 'text-gray-400'}`} /> {story.downvotedBy?.length || 0}
-          </Button>
-          <Button variant="outline" size="sm" className="rounded-full border-border px-2 text-[10px] font-black uppercase tracking-widest sm:gap-2 sm:px-3">
-            <Share2 className="w-4 h-4 text-primary" />
-            <span className="hidden sm:inline">Share</span>
-          </Button>
-        </div>
+        <div className="text-sm font-bold text-muted-foreground">{t('storyDetail.commentsTitle', { count: totalComments })}</div>
+        <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-accent hover:text-foreground">
+          <MoreHorizontal className="h-5 w-5" />
+        </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-10">
-        <div className="mb-8 md:mb-10">
-          <div className="mb-5 flex flex-wrap items-center gap-3 sm:mb-6">
-            <Badge
-              variant="outline"
-              className="text-[9px] uppercase font-black tracking-widest px-3 py-1 !text-foreground"
-              style={{ borderColor: category?.color, backgroundColor: `${category?.color}10` }}
-            >
-              {category?.label}
-            </Badge>
-            {emotion && (
-              <div className="flex items-center gap-2 bg-accent/50 px-3 py-1 rounded-full border border-border">
-                <span className="text-lg">{emotion.icon}</span>
-                <span className="text-[9px] uppercase font-black tracking-widest">{emotion.label}</span>
-              </div>
-            )}
-          </div>
-          <h1 className="mb-6 font-serif text-2xl font-bold leading-tight text-foreground sm:text-3xl md:mb-8 md:text-4xl">
-            {story.title}
-          </h1>
-
-          <div className="grid grid-cols-1 gap-4 border-y border-border py-5 sm:grid-cols-2 sm:gap-6 sm:py-8">
-            <div className="flex items-center gap-3">
+      <div className="flex-1 overflow-y-auto">
+        <div className="px-3 pb-6 pt-3 sm:px-4">
+          <div className="rounded-2xl bg-card border border-border p-4 shadow-lg">
+            <div className="mb-3 flex items-start gap-3">
               {story.authorImage ? (
-                <img src={story.authorImage} alt={story.authorName} className="w-11 h-11 rounded-full border border-border object-cover" referrerPolicy="no-referrer" />
+                <img src={story.authorImage} alt={story.authorName} className="h-11 w-11 rounded-full object-cover" referrerPolicy="no-referrer" />
               ) : (
-                <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center border border-border">
-                  <User className="w-5 h-5 text-primary" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-accent">
+                  <User className="h-5 w-5 text-muted-foreground" />
                 </div>
               )}
-              <div>
-                <p className="text-[9px] uppercase font-black text-muted tracking-widest leading-none mb-1">Author</p>
-                <p className="text-sm font-bold text-foreground">{story.authorName || 'Anonymous'}</p>
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-base font-bold text-foreground">{story.authorName || t('storyDetail.anonymous')}</div>
+                <div className="mt-0.5 text-xs font-medium text-muted-foreground">{formatRelativeTime(story.createdAt)}</div>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center border border-border">
-                <Clock className="w-5 h-5" />
+
+            <h1 className="mb-2 text-2xl font-bold leading-tight text-foreground">{story.title}</h1>
+            <p className="whitespace-pre-wrap text-[17px] leading-relaxed text-foreground">{story.content}</p>
+
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <span
+                className="rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white"
+                style={{ backgroundColor: category?.color || '#6b7280' }}
+              >
+                {category ? t(`categories.${category.value}`) : t('categories.other')}
+              </span>
+              {emotion && (
+                <span className="rounded-full bg-accent px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                  {emotion.icon} {t(`emotions.${emotion.value}`)}
+                </span>
+              )}
+            </div>
+
+            <div className="mt-4 flex items-center justify-between border-y border-border py-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center rounded-full bg-blue-500 p-1">
+                  <ThumbsUp className="h-3 w-3 text-white" />
+                </div>
+                <div className="flex items-center justify-center rounded-full bg-red-500 p-1">
+                  <ThumbsDown className="h-3 w-3 text-white" />
+                </div>
+                <span>{upvoteCount + downvoteCount}</span>
               </div>
-              <div>
-                {/* <p className="text-[9px] uppercase font-black text-muted tracking-widest leading-none mb-1">Shared</p> */}
-                <p className="text-sm font-bold text-foreground">{formatDistanceToNow(story.createdAt)} ago</p>
-              </div>
+              <div className="text-sm">{totalComments}</div>
+            </div>
+
+            <div className="mt-1 grid grid-cols-3 gap-1">
+              <button
+                type="button"
+                onClick={() => onUpvote(story.id)}
+                className={`flex items-center justify-center gap-2 rounded-lg px-2 py-2 text-xs font-bold transition-colors ${hasUpvoted ? 'bg-green-900/30 text-green-400' : 'text-muted-foreground hover:bg-accent'}`}
+              >
+                <ThumbsUp className="h-4 w-4" />
+                {upvoteCount}
+              </button>
+              <button
+                type="button"
+                onClick={() => onDownvote(story.id)}
+                className={`flex items-center justify-center gap-2 rounded-lg px-2 py-2 text-xs font-bold transition-colors ${hasDownvoted ? 'bg-red-900/30 text-red-400' : 'text-muted-foreground hover:bg-accent'}`}
+              >
+                <ThumbsDown className="h-4 w-4" />
+                {downvoteCount}
+              </button>
+              <button
+                type="button"
+                className="flex items-center justify-center gap-2 rounded-lg px-2 py-2 text-xs font-bold text-muted-foreground transition-colors hover:bg-accent"
+              >
+                <Share2 className="h-4 w-4" />
+                {t('storyDetail.share')}
+              </button>
             </div>
           </div>
-        </div>
 
-        <div className="prose prose-stone max-w-none">
-          <p className="whitespace-pre-wrap font-sans text-base leading-relaxed text-foreground/80 sm:text-lg">
-            {story.content}
-          </p>
-        </div>
-
-        {/* <div className="mt-16 p-8 bg-accent/20 rounded-2xl border border-border">
-          <div className="flex items-center gap-2 text-muted mb-3">
-            <MapPin className="w-4 h-4" />
-            <span className="text-[10px] font-black uppercase tracking-widest">Location Context</span>
+          <div className="mt-4 flex items-center justify-between px-1">
+            <h3 className="text-[15px] font-semibold text-foreground">{t('storyDetail.mostRelevant')}</h3>
+            <MessageCircle className="h-4 w-4 text-muted-foreground" />
           </div>
-          <p className="text-sm font-bold text-muted">
-            Coordinates: {story.latitude.toFixed(4)}, {story.longitude.toFixed(4)}
-          </p>
-        </div> */}
 
-        {commentsEnabled && story.comments && story.comments.length > 0 && (
-          <div className="mt-10 space-y-4 sm:mt-16">
-            <div className="flex items-center gap-2">
-              <MessageCircle className="w-5 h-5 text-primary" />
-              <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">Comments ({story.comments.length})</h3>
-            </div>
-            <div className="space-y-4">
-              {story.comments.map((comment) => (
-                <div key={comment.id} className="p-4 bg-accent/30 rounded-lg border border-border/50">
-                  <div className="flex items-center gap-2 mb-2">
-                    {comment.authorImage ? (
-                      <img src={comment.authorImage} alt={comment.authorName} className="w-6 h-6 rounded-full border border-border object-cover" referrerPolicy="no-referrer" />
-                    ) : (
-                      <div className="w-6 h-6 rounded-full bg-accent border border-border flex items-center justify-center">
-                        <User className="w-3 h-3 text-muted" />
-                      </div>
-                    )}
-                    <span className="text-xs font-bold text-foreground">{comment.authorName}</span>
-                    <span className="text-[9px] text-muted ml-auto">{formatDistanceToNow(comment.createdAt)} ago</span>
+          {commentsEnabled && totalComments > 0 && (
+            <div className="mt-3 space-y-4">
+              {story.comments?.map((comment) => (
+                <div key={comment.id} className="flex items-start gap-2.5">
+                  {comment.authorImage ? (
+                    <img src={comment.authorImage} alt={comment.authorName} className="h-9 w-9 rounded-full object-cover" referrerPolicy="no-referrer" />
+                  ) : (
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent">
+                      <User className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <div className="rounded-2xl bg-accent px-3 py-2.5 border border-border">
+                      <p className="text-[14px] font-bold leading-none text-foreground">{comment.authorName || t('storyDetail.anonymous')}</p>
+                      <p className="mt-1.5 break-words text-[15px] leading-relaxed text-foreground">{comment.content}</p>
+                    </div>
+                    <div className="mt-1.5 flex items-center gap-4 px-1 text-xs font-semibold text-muted-foreground">
+                      <span>{formatRelativeTime(comment.createdAt)}</span>
+                      <button type="button" className="transition-colors hover:text-foreground">{t('storyDetail.reply')}</button>
+                    </div>
                   </div>
-                  <p className="text-sm text-foreground/80">{comment.content}</p>
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          )}
 
-        {commentsEnabled ? (
-          <div className="mt-8 rounded-2xl border border-border/50 bg-accent/20 p-4 sm:mt-12 sm:p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <MessageCircle className="w-5 h-5 text-primary" />
-              <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">Add a Comment</h3>
+          {commentsEnabled && totalComments === 0 && (
+            <div className="mt-4 rounded-xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
+              {t('storyDetail.noCommentsYet')}
             </div>
-            <div className="space-y-3">
+          )}
+
+          {!commentsEnabled && (
+            <div className="mt-4 rounded-2xl border border-border bg-card p-4">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <MessageCircleOff className="h-5 w-5" />
+                <h3 className="text-sm font-bold uppercase tracking-widest">{t('storyDetail.commentsOff')}</h3>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {commentsEnabled && (
+        <div className="border-t border-border bg-card px-3 py-3 sm:px-4">
+          <div className="flex items-end gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent">
+              <User className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div className="flex-1 rounded-2xl border border-border bg-accent px-3 py-2">
               <Textarea
-                placeholder="Share your thoughts..."
-                className="min-h-[80px] bg-white border-border focus-visible:ring-primary p-3"
+                placeholder={t('storyDetail.writeComment')}
+                className="min-h-[42px] border-0 bg-transparent p-0 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-0"
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
                 maxLength={500}
               />
-              <div className="flex items-center justify-between">
-                <p className="text-[9px] text-muted font-bold uppercase tracking-widest">
-                  {commentText.length} / 500 characters
-                </p>
-                <Button
-                  onClick={handleAddComment}
-                  disabled={!commentText.trim() || isSubmittingComment}
-                  className="rounded-full gap-2 text-[10px] font-black uppercase tracking-widest bg-primary hover:bg-primary/90"
-                >
-                  <Send className="w-3 h-3" />
-                  {isSubmittingComment ? 'Posting...' : 'Comment'}
-                </Button>
-              </div>
             </div>
+            <Button
+              onClick={handleAddComment}
+              disabled={!commentText.trim() || isSubmittingComment}
+              className="h-9 w-9 rounded-full bg-primary p-0 text-white hover:bg-primary/90 disabled:opacity-50"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
           </div>
-        ) : (
-          <div className="mt-8 rounded-2xl border border-border/60 bg-muted/20 p-4 sm:mt-12 sm:p-6">
-            <div className="flex items-center gap-2 text-muted">
-              <MessageCircleOff className="w-5 h-5" />
-              <h3 className="text-sm font-bold uppercase tracking-widest">Comments are turned off for this story</h3>
-            </div>
+          <div className="mt-1 px-12 text-[11px] text-muted-foreground">
+            {t('storyDetail.commentCharacters', { count: commentText.length })}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </motion.div>
   );
 }

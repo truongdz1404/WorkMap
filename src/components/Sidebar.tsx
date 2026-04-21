@@ -7,6 +7,7 @@ import { ScrollArea } from './ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Search, Filter, Map as MapIcon, List, Database, Loader } from 'lucide-react';
 import { Button } from './ui/button';
+import { useI18n } from '../i18n';
 
 interface SidebarProps {
   stories: Story[];
@@ -23,11 +24,12 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ stories, onSelectStory, onFilterChange, selectedCategory, currentUserId, onUpvote, onDownvote, onComment, onSeedData, isLoadingMore, onLoadMore }: SidebarProps) {
+  const { t } = useI18n();
   const [search, setSearch] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
   const selectedCategoryLabel = selectedCategory === 'all'
-    ? 'All'
-    : CATEGORIES.find((cat) => cat.value === selectedCategory)?.label ?? 'All';
+    ? t('sidebar.all')
+    : t(`categories.${selectedCategory}`);
 
   const filteredStories = stories.filter(s => {
     const matchesCategory = selectedCategory === 'all' || s.category === selectedCategory;
@@ -62,8 +64,8 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
             <MapIcon className="h-5 w-5 text-white md:h-6 md:w-6" />
           </div>
           <div>
-            <h1 className="text-lg font-serif font-bold tracking-tight text-foreground min-[700px]:text-xl">WorkMap</h1>
-            <p className="text-[10px] uppercase font-bold tracking-widest text-muted">Community Stories</p>
+            <h1 className="text-lg font-serif font-bold tracking-tight text-foreground min-[700px]:text-xl">{t('nav.brand')}</h1>
+            <p className="text-[10px] uppercase font-bold tracking-widest text-muted">{t('sidebar.communityStories')}</p>
           </div>
         </div>
 
@@ -71,7 +73,7 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
             <Input
-              placeholder="Search..."
+              placeholder={t('sidebar.search')}
               className="h-10 border-border bg-background pl-9 focus-visible:ring-primary"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -83,10 +85,10 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
                 <SelectValue>{selectedCategoryLabel}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all" className="font-semibold">All</SelectItem>
+                <SelectItem value="all" className="font-semibold">{t('sidebar.all')}</SelectItem>
                 {CATEGORIES.map((cat) => (
                   <SelectItem key={cat.value} value={cat.value} className="font-semibold">
-                    {cat.label}
+                    {t(`categories.${cat.value}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -98,7 +100,7 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
           <div className="relative mb-4 sm:mb-5 md:mb-6">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
             <Input
-              placeholder="Search stories..."
+              placeholder={t('sidebar.searchStories')}
               className="h-10 border-border bg-background pl-10 focus-visible:ring-primary"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -106,17 +108,17 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2 text-[10px] font-bold text-muted uppercase tracking-wider mb-1">
-              <Filter className="w-3 h-3" /> Filter by Category
+              <Filter className="w-3 h-3" /> {t('sidebar.filterByCategory')}
             </div>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => onFilterChange('all')}
                 className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all border ${selectedCategory === 'all'
                     ? 'bg-primary text-white shadow-md border-transparent'
-                    : 'bg-white text-foreground hover:bg-accent border-border hover:border-primary/30'
+                    : 'bg-card text-foreground hover:bg-accent border-border dark:bg-card dark:hover:bg-accent hover:border-primary/30'
                   }`}
               >
-                All
+                {t('sidebar.all')}
               </button>
               {CATEGORIES.map((cat) => (
                 <button
@@ -124,11 +126,11 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
                   onClick={() => onFilterChange(cat.value)}
                   className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all border ${selectedCategory === cat.value
                       ? '!text-white shadow-md border-transparent'
-                      : 'bg-white text-foreground hover:bg-accent/30 border-border'
+                      : 'bg-card text-foreground hover:bg-accent/30 border-border dark:bg-card dark:hover:bg-accent/30'
                     }`}
                   style={{ backgroundColor: selectedCategory === cat.value ? cat.color : undefined }}
                 >
-                  {cat.label}
+                  {t(`categories.${cat.value}`)}
                 </button>
               ))}
             </div>
@@ -140,7 +142,7 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
         <div className="space-y-3 py-4 sm:space-y-4 sm:py-6">
           <div className="flex items-center justify-between mb-2 px-2">
             <h2 className="text-sm font-serif font-bold text-foreground flex items-center gap-2">
-              <List className="w-4 h-4 text-primary" /> Recent Stories
+              <List className="w-4 h-4 text-primary" /> {t('sidebar.recentStories')}
             </h2>
             <span className="text-[10px] font-bold text-muted bg-accent px-2 py-0.5 rounded-full border border-border">
               {filteredStories.length}
@@ -165,7 +167,7 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
                 <div className="flex justify-center items-center py-6">
                   <div className="flex items-center gap-2 text-muted">
                     <Loader className="w-4 h-4 animate-spin" />
-                    <span className="text-xs font-semibold">Loading more...</span>
+                    <span className="text-xs font-semibold">{t('sidebar.loadingMore')}</span>
                   </div>
                 </div>
               )}
@@ -175,10 +177,10 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
               <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4 border border-border">
                 <Search className="w-8 h-8 text-muted/30" />
               </div>
-              <p className="text-sm text-muted font-medium mb-4">No stories found matching your search.</p>
+              <p className="text-sm text-muted font-medium mb-4">{t('sidebar.noStoriesFound')}</p>
               {stories.length === 0 && onSeedData && (
                 <Button variant="outline" size="sm" onClick={onSeedData} className="gap-2 border-border text-muted hover:text-primary">
-                  <Database className="w-4 h-4" /> Seed Example Data
+                  <Database className="w-4 h-4" /> {t('sidebar.seedExampleData')}
                 </Button>
               )}
             </div>
@@ -188,7 +190,7 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
 
       <div className="hidden border-t border-border bg-accent/30 px-4 py-3 sm:block sm:p-6">
         <p className="text-[10px] text-center font-medium opacity-70">
-          Learning from workplace journeys. Anonymous posting enabled.
+          {t('sidebar.footerNote')}
         </p>
       </div>
     </div>

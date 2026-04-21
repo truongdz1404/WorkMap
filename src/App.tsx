@@ -9,10 +9,12 @@ import StoryDetail from './components/StoryDetail';
 import Navbar from './components/Navbar';
 import { AnimatePresence, motion } from 'motion/react';
 import { AlertCircle, PanelBottomOpen, PanelBottomClose } from 'lucide-react';
+import { useI18n } from './i18n';
 
 export default function App() {
+  const { t } = useI18n();
   const MOBILE_BREAKPOINT = 700;
-  const DEFAULT_ANONYMOUS_AVATAR = '/avatars/anonymous-default.svg';
+  const DEFAULT_ANONYMOUS_AVATAR = 'https://scontent.fhan20-1.fna.fbcdn.net/v/t39.35477-6/480772267_8870171503091593_8950035799029425225_n.jpg?stp=cp0_dst-jpg_s50x50_tt6&_nc_cat=1&ccb=1-7&_nc_sid=ee2d7f&_nc_eui2=AeHx_i2sy1oVJUE7vihfADrZyo1AD-kF533KjUAP6QXnfbJ1NptTMlw3iNe4h7fLZhAz2Oc2Q-z6-H3fCngupBFs&_nc_ohc=r3qM0gJL1IQQ7kNvwEheqky&_nc_oc=AdpGoaBJi797gbe--fN-wYwGOmzehHENw6IQNIl8CtVEdheWP_M2pY9Qm_Dn2rhXn3k&_nc_zt=14&_nc_ht=scontent.fhan20-1.fna&_nc_gid=t61r1muLHw4PwcKD2Rqxyw&_nc_ss=7a3a8&oh=00_Af1g8pMSMNj4LU172by_6j1YL4wMyfl2_R5FVS4LVZUIzQ&oe=69EB7ABB';
   const [user, setUser] = useState<User | null>(null);
   const [stories, setStories] = useState<Story[]>([]);
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
@@ -43,14 +45,14 @@ export default function App() {
       setStories(storyData);
     }, (err) => {
       console.error("Firestore error:", err);
-      setError("Failed to load stories. Please check your connection.");
+      setError(t('app.errorFailedLoad'));
     });
 
     return () => {
       unsubscribeAuth();
       unsubscribeStories();
     };
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
@@ -123,7 +125,7 @@ export default function App() {
         }, 500);
       } catch (err) {
         console.error("Login cancelled or failed:", err);
-        setError("Login cancelled. Please try again.");
+        setError(t('app.errorLoginCancelled'));
       }
     } else {
       // User is already logged in, show dialog immediately
@@ -146,7 +148,7 @@ export default function App() {
         }, 500);
       } catch (err) {
         console.error("Login cancelled or failed:", err);
-        setError("Login cancelled. Please try again.");
+        setError(t('app.errorLoginCancelled'));
       }
     } else {
       // User is already logged in, show dialog immediately
@@ -159,7 +161,7 @@ export default function App() {
     setIsSubmitting(true);
     setError(null);
     try {
-      const anonymousAlias = `Ẩn danh #${Math.floor(1000 + Math.random() * 9000)}`;
+      const anonymousAlias = t('app.anonymousAlias', { id: Math.floor(1000 + Math.random() * 9000) });
 
       await addDoc(collection(db, 'stories'), {
         ...data,
@@ -168,7 +170,7 @@ export default function App() {
         upvotedBy: [],
         downvotedBy: [],
         ...(user && !data.isAnonymous ? { authorId: user.uid } : {}),
-        authorName: data.isAnonymous ? anonymousAlias : (user?.displayName || 'Anonymous'),
+        authorName: data.isAnonymous ? anonymousAlias : (user?.displayName || t('app.anonymousName')),
         ...(data.isAnonymous
           ? { authorImage: DEFAULT_ANONYMOUS_AVATAR }
           : (user?.photoURL ? { authorImage: user.photoURL } : {})),
@@ -178,7 +180,7 @@ export default function App() {
       setClickCoords(null);
     } catch (err) {
       console.error("Error adding story:", err);
-      setError("Failed to post story. You might need to sign in.");
+      setError(t('app.errorFailedPost'));
     } finally {
       setIsSubmitting(false);
     }
@@ -186,7 +188,7 @@ export default function App() {
 
   const handleUpvote = async (storyId: string) => {
     if (!user) {
-      setError("Please login to vote");
+      setError(t('app.errorPleaseLoginVote'));
       return;
     }
     try {
@@ -211,7 +213,7 @@ export default function App() {
 
   const handleDownvote = async (storyId: string) => {
     if (!user) {
-      setError("Please login to vote");
+      setError(t('app.errorPleaseLoginVote'));
       return;
     }
     try {
@@ -236,12 +238,12 @@ export default function App() {
 
   const handleAddComment = async (storyId: string, commentText: string) => {
     if (!user) {
-      setError("Please login to comment");
+      setError(t('app.errorPleaseLoginComment'));
       return;
     }
     const story = stories.find((s) => s.id === storyId);
     if (story?.allowComments === false) {
-      setError("Comments are disabled for this story");
+      setError(t('app.errorCommentsDisabled'));
       return;
     }
     try {
@@ -249,7 +251,7 @@ export default function App() {
       const newComment = {
         id: commentId,
         authorId: user.uid,
-        authorName: user.displayName || 'Anonymous',
+        authorName: user.displayName || t('app.anonymousName'),
         ...(user.photoURL ? { authorImage: user.photoURL } : {}),
         content: commentText,
         createdAt: Date.now(),
@@ -260,15 +262,15 @@ export default function App() {
       });
     } catch (err) {
       console.error("Error adding comment:", err);
-      setError("Failed to add comment");
+      setError(t('app.errorFailedAddComment'));
     }
   };
 
   const handleSeedData = async () => {
     const exampleStories = [
       {
-        title: "Communication breakdown in remote team",
-        content: "Our team was struggling with async communication. We started using a shared document for daily updates and it cleared up so much confusion! The key was being explicit about expectations and deadlines.",
+        title: t('seed.story1.title'),
+        content: t('seed.story1.content'),
         category: "communication",
         emotion: "confusion",
         latitude: 10.7626,
@@ -276,12 +278,12 @@ export default function App() {
         createdAt: Date.now() - 86400000,
         upvotedBy: [],
         downvotedBy: [],
-        authorName: "Minh Thu",
+        authorName: t('seed.story1.author'),
         comments: [],
       },
       {
-        title: "First day onboarding success",
-        content: "I was so nervous about my first day as an intern. But the team had a clear checklist and a buddy assigned to me. It made me feel welcome and productive from day one. Highly recommend this approach for all startups!",
+        title: t('seed.story2.title'),
+        content: t('seed.story2.content'),
         category: "onboarding",
         emotion: "success",
         latitude: 21.0285,
@@ -289,12 +291,12 @@ export default function App() {
         createdAt: Date.now() - 172800000,
         upvotedBy: [],
         downvotedBy: [],
-        authorName: "Hoang Nam",
+        authorName: t('seed.story2.author'),
         comments: [],
       },
       {
-        title: "Navigating office politics",
-        content: "Dealing with conflicting interests between departments was stressful. I learned that transparency and documentation are your best friends. Always keep a paper trail and try to understand the motivations of all stakeholders.",
+        title: t('seed.story3.title'),
+        content: t('seed.story3.content'),
         category: "conflict",
         emotion: "stress",
         latitude: 16.0544,
@@ -302,7 +304,7 @@ export default function App() {
         createdAt: Date.now() - 259200000,
         upvotedBy: [],
         downvotedBy: [],
-        authorName: "Anh Tuan",
+        authorName: t('seed.story3.author'),
         comments: [],
       }
     ];
@@ -420,7 +422,7 @@ export default function App() {
           className={`order-2 ${isMobileSidebarVisible ? 'flex' : 'hidden'} h-8 items-center bg-card/90 px-2 ${isResizingSidebar ? 'bg-accent/80' : ''}`}
           onPointerDown={handleSidebarResizeStart}
           role="separator"
-          aria-label="Resize sidebar"
+          aria-label={t('app.resizeSidebar')}
           aria-orientation="horizontal"
         >
           <div className="flex flex-1 cursor-row-resize touch-none select-none items-center justify-center">
@@ -429,7 +431,7 @@ export default function App() {
 
           <button
             type="button"
-            aria-label="Hide sidebar"
+            aria-label={t('app.hideSidebar')}
             onPointerDown={(e) => e.stopPropagation()}
             onClick={(e) => {
               e.stopPropagation();
@@ -471,12 +473,12 @@ export default function App() {
       {isMobileLayout && !isMobileSidebarVisible && (
         <button
           type="button"
-          aria-label="Show sidebar"
+          aria-label={t('app.showSidebar')}
           onClick={() => setIsMobileSidebarVisible(true)}
           className="fixed bottom-4 right-4 z-30 flex h-11 items-center gap-2 rounded-full border border-border bg-white/95 px-3 shadow-lg backdrop-blur"
         >
           <PanelBottomOpen className="h-4 w-4 text-foreground/80" />
-          <span className="text-xs font-bold uppercase tracking-wider">Stories</span>
+          <span className="text-xs font-bold uppercase tracking-wider">{t('app.stories')}</span>
         </button>
       )}
     </div>

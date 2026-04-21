@@ -1,0 +1,115 @@
+{
+  "nav": {
+    "brand": "WorkMap",
+    "exploreMap": "Explore Map",
+    "insights": "Insights",
+    "guidebook": "Guidebook",
+    "shareStory": "Share Story",
+    "share": "Share",
+    "welcome": "Welcome",
+    "signIn": "Sign In",
+    "languageVi": "VI",
+    "languageEn": "EN",
+    "languageLabel": "Language",
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode"
+  },
+  "sidebar": {
+    "communityStories": "Community Stories",
+    "search": "Search...",
+    "searchStories": "Search stories...",
+    "all": "All",
+    "filterByCategory": "Filter by Category",
+    "recentStories": "Recent Stories",
+    "loadingMore": "Loading more...",
+    "noStoriesFound": "No stories found matching your search.",
+    "seedExampleData": "Seed Example Data",
+    "footerNote": "Learning from workplace journeys. Anonymous posting enabled."
+  },
+  "storyForm": {
+    "title": "Share your story",
+    "location": "Location",
+    "titleLabel": "Title",
+    "titlePlaceholder": "A short, catchy title",
+    "categoryLabel": "Category",
+    "selectCategory": "Select category",
+    "emotionLabel": "How did you feel?",
+    "storyLabel": "Your Story",
+    "storyPlaceholder": "What happened? How did you handle it?",
+    "charactersCount": "{count} / 5000 characters",
+    "postAnonymousTitle": "Post anonymously",
+    "postAnonymousDesc": "Hide your profile and name from this story.",
+    "allowCommentsTitle": "Allow comments",
+    "allowCommentsDesc": "Let others discuss this story.",
+    "cancel": "Cancel",
+    "posting": "Posting...",
+    "postStory": "Post Story"
+  },
+  "storyDetail": {
+    "share": "Share",
+    "author": "Author",
+    "commentsTitle": "Comments ({count})",
+    "mostRelevant": "Most relevant",
+    "reply": "Reply",
+    "writeComment": "Write a comment...",
+    "noCommentsYet": "No comments yet.",
+    "addComment": "Add a Comment",
+    "shareThoughts": "Share your thoughts...",
+    "commentCharacters": "{count} / 500 characters",
+    "posting": "Posting...",
+    "comment": "Comment",
+    "commentsOff": "Comments are turned off for this story",
+    "anonymous": "Anonymous"
+  },
+  "app": {
+    "errorFailedLoad": "Failed to load stories. Please check your connection.",
+    "errorLoginCancelled": "Login cancelled. Please try again.",
+    "errorFailedPost": "Failed to post story. You might need to sign in.",
+    "errorPleaseLoginVote": "Please login to vote",
+    "errorPleaseLoginComment": "Please login to comment",
+    "errorCommentsDisabled": "Comments are disabled for this story",
+    "errorFailedAddComment": "Failed to add comment",
+    "resizeSidebar": "Resize sidebar",
+    "hideSidebar": "Hide sidebar",
+    "showSidebar": "Show sidebar",
+    "stories": "Stories",
+    "anonymousName": "Anonymous",
+    "anonymousAlias": "Anonymous #{id}"
+  },
+  "categories": {
+    "conflict": "Conflict",
+    "communication": "Communication",
+    "onboarding": "Onboarding",
+    "culture": "Culture",
+    "technical": "Technical",
+    "other": "Other"
+  },
+  "emotions": {
+    "stress": "Stress",
+    "confusion": "Confusion",
+    "success": "Success",
+    "happy": "Happy",
+    "neutral": "Neutral",
+    "frustrated": "Frustrated"
+  },
+  "map": {
+    "storyAuthor": "Story author"
+  },
+  "seed": {
+    "story1": {
+      "title": "Communication breakdown in remote team",
+      "content": "Our team was struggling with async communication. We started using a shared document for daily updates and it cleared up so much confusion. The key was being explicit about expectations and deadlines.",
+      "author": "Minh Thu"
+    },
+    "story2": {
+      "title": "First day onboarding success",
+      "content": "I was so nervous about my first day as an intern. But the team had a clear checklist and a buddy assigned to me. It made me feel welcome and productive from day one.",
+      "author": "Hoang Nam"
+    },
+    "story3": {
+      "title": "Navigating office politics",
+      "content": "Dealing with conflicting interests between departments was stressful. I learned that transparency and documentation are your best friends. Always keep a paper trail and understand motivations.",
+      "author": "Anh Tuan"
+    }
+  }
+}

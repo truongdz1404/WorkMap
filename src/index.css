@@ -219,6 +219,14 @@ body {
   .text-muted {
     color: var(--text-muted-override) !important;
   }
+
+  .brand-gradient {
+    background: linear-gradient(90deg, #23e6ef 0%, #1677ff 48%, #1f2a8a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+  }
 }
 
 @layer base {

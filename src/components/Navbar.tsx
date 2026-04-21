@@ -22,7 +22,7 @@ export default function Navbar({ user, onLogin, onLogout, onAddStory }: NavbarPr
           <div className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-white p-1 shadow-sm sm:h-9 sm:w-9">
             <img src="/logo.png" alt="DayOneDay logo" className="h-full w-full rounded-full object-contain" />
           </div>
-          <div className="truncate font-serif text-base font-bold tracking-tight text-primary sm:text-lg">{t('nav.brand')}</div>
+          <div className="brand-gradient truncate font-serif text-base font-bold tracking-tight sm:text-lg">{t('nav.brand')}</div>
         </div>
         <div className="hidden md:flex items-center gap-4 text-[11px] font-bold uppercase tracking-widest text-muted">
           <span className="text-primary underline underline-offset-4 cursor-pointer">{t('nav.exploreMap')}</span>

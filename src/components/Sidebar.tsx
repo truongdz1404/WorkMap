@@ -64,7 +64,7 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
             <img src="/logo.png" alt="DayOneDay logo" className="h-full w-full rounded-full object-contain" />
           </div>
           <div>
-            <h1 className="text-lg font-serif font-bold tracking-tight text-foreground min-[700px]:text-xl">{t('nav.brand')}</h1>
+            <h1 className="brand-gradient text-lg font-serif font-bold tracking-tight min-[700px]:text-xl">{t('nav.brand')}</h1>
             <p className="text-[10px] uppercase font-bold tracking-widest text-muted">{t('sidebar.communityStories')}</p>
           </div>
         </div>

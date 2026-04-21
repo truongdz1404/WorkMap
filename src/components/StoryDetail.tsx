@@ -117,15 +117,17 @@ function TranslatedComment({
         <div className="mt-1.5 flex items-center gap-4 px-1 text-xs font-semibold text-muted-foreground">
           <span>{formatRelativeTime(comment.createdAt)}</span>
           <button type="button" className="transition-colors hover:text-foreground">{replyLabel}</button>
-          <button
-            type="button"
-            onClick={handleToggleTranslation}
-            disabled={isTranslating}
-            className="inline-flex items-center gap-1 transition-colors hover:text-foreground disabled:opacity-50"
-          >
-            <Languages className="h-3.5 w-3.5" />
-            {isTranslating ? translatingLabel : isTranslated ? originalLabel : translateLabel}
-          </button>
+          {comment.sourceLanguage && comment.sourceLanguage !== language && (
+            <button
+              type="button"
+              onClick={handleToggleTranslation}
+              disabled={isTranslating}
+              className="inline-flex items-center gap-1 transition-colors hover:text-foreground disabled:opacity-50"
+            >
+              <Languages className="h-3.5 w-3.5" />
+              {isTranslating ? translatingLabel : isTranslated ? originalLabel : translateLabel}
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -240,17 +242,19 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
               </div>
             </div>
 
-            <div className="mb-3 flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleToggleStoryTranslation}
-                disabled={isTranslatingStory}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-50"
-              >
-                <Languages className="h-3.5 w-3.5" />
-                {isTranslatingStory ? t('storyDetail.translating') : isStoryTranslated ? t('storyDetail.original') : t('storyDetail.translate')}
-              </button>
-            </div>
+            {story.sourceLanguage && story.sourceLanguage !== language && (
+              <div className="mb-3 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleToggleStoryTranslation}
+                  disabled={isTranslatingStory}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-50"
+                >
+                  <Languages className="h-3.5 w-3.5" />
+                  {isTranslatingStory ? t('storyDetail.translating') : isStoryTranslated ? t('storyDetail.original') : t('storyDetail.translate')}
+                </button>
+              </div>
+            )}
 
             <h1 className="mb-2 text-2xl font-bold leading-tight text-foreground">{visibleTitle}</h1>
             <p className="whitespace-pre-wrap text-[17px] leading-relaxed text-foreground">{visibleContent}</p>

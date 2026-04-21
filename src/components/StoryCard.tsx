@@ -123,15 +123,17 @@ export default function StoryCard({ story, onClick, onUpvote, onDownvote, onComm
           {visibleContent}
         </p>
 
-        <button
-          type="button"
-          onClick={handleToggleTranslation}
-          disabled={isTranslating}
-          className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-50"
-        >
-          <Languages className="h-3.5 w-3.5" />
-          {isTranslating ? t('storyDetail.translating') : showTranslated ? t('storyDetail.original') : t('storyDetail.translate')}
-        </button>
+        {story.sourceLanguage && story.sourceLanguage !== language && (
+          <button
+            type="button"
+            onClick={handleToggleTranslation}
+            disabled={isTranslating}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-50"
+          >
+            <Languages className="h-3.5 w-3.5" />
+            {isTranslating ? t('storyDetail.translating') : showTranslated ? t('storyDetail.original') : t('storyDetail.translate')}
+          </button>
+        )}
 
         <div className="flex items-center justify-between pt-3 border-t border-border/30">
           <div className="flex items-center gap-3 text-[11px] text-muted font-bold uppercase tracking-wider">

@@ -92,6 +92,9 @@ service cloud.firestore {
                      request.resource.data.comments[request.resource.data.comments.size() - 1].authorId == request.auth.uid &&
                      isValidComment(request.resource.data.comments[request.resource.data.comments.size() - 1])) ||
                     (isAuthenticated() && 
+                     request.resource.data.diff(resource.data).affectedKeys().hasOnly(['comments']) &&
+                     request.resource.data.comments.size() == resource.data.comments.size()) ||
+                    (isAuthenticated() && 
                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotedBy', 'downvotedBy'])) ||
                     (isAuthenticated() && 
                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotedBy'])) ||

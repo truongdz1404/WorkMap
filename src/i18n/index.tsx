@@ -3,10 +3,9 @@ import { formatDistanceToNow } from 'date-fns';
 import { enUS, vi } from 'date-fns/locale';
 import enTranslations from './translations/en.json';
 import viTranslations from './translations/vi.json';
+import type { Language } from '../types';
 
 type Dictionary = typeof viTranslations;
-
-type Language = 'vi' | 'en';
 
 type TranslateParams = Record<string, string | number>;
 

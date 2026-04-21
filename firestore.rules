@@ -96,7 +96,13 @@ service cloud.firestore {
                     (isAuthenticated() && 
                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotedBy'])) ||
                     (isAuthenticated() && 
-                     request.resource.data.diff(resource.data).affectedKeys().hasOnly(['downvotedBy']));
+                     request.resource.data.diff(resource.data).affectedKeys().hasOnly(['downvotedBy'])) ||
+                    (isAuthenticated() && 
+                     request.resource.data.diff(resource.data).affectedKeys().hasOnly(['titleTranslations', 'contentTranslations'])) ||
+                    (isAuthenticated() && 
+                     request.resource.data.diff(resource.data).affectedKeys().hasOnly(['titleTranslations'])) ||
+                    (isAuthenticated() && 
+                     request.resource.data.diff(resource.data).affectedKeys().hasOnly(['contentTranslations']));
       
       // Only author can delete
       allow delete: if isDocOwner();

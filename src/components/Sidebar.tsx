@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Search, Filter, List, Database, Loader } from 'lucide-react';
 import { Button } from './ui/button';
 import { useI18n } from '../i18n';
+import { getLocalizedText } from '../lib/translation';
 
 interface SidebarProps {
   stories: Story[];
@@ -24,7 +25,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ stories, onSelectStory, onFilterChange, selectedCategory, currentUserId, onUpvote, onDownvote, onComment, onSeedData, isLoadingMore, onLoadMore }: SidebarProps) {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const [search, setSearch] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
   const selectedCategoryLabel = selectedCategory === 'all'
@@ -33,8 +34,10 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
 
   const filteredStories = stories.filter(s => {
     const matchesCategory = selectedCategory === 'all' || s.category === selectedCategory;
-    const matchesSearch = s.title.toLowerCase().includes(search.toLowerCase()) ||
-      s.content.toLowerCase().includes(search.toLowerCase());
+    const storyTitle = getLocalizedText(s.title, s.titleTranslations, language);
+    const storyContent = getLocalizedText(s.content, s.contentTranslations, language);
+    const matchesSearch = storyTitle.toLowerCase().includes(search.toLowerCase()) ||
+      storyContent.toLowerCase().includes(search.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 

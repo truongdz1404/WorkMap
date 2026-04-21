@@ -11,11 +11,15 @@ import {
   Send,
   MessageCircleOff,
   MoreHorizontal,
+  Languages,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useState } from 'react';
 import { Textarea } from './ui/textarea';
 import { useI18n } from '../i18n';
+import { translateText, translateTexts } from '../lib/translation';
+import { db } from '../firebase';
+import { doc, updateDoc, getDoc } from 'firebase/firestore';
 
 interface StoryDetailProps {
   story: Story;
@@ -26,12 +30,124 @@ interface StoryDetailProps {
   currentUserId?: string;
 }
 
+function TranslatedComment({
+  comment,
+  formatRelativeTime,
+  replyLabel,
+  anonymousLabel,
+  language,
+  translateLabel,
+  originalLabel,
+  translatingLabel,
+  storyId,
+}: {
+  comment: NonNullable<Story['comments']>[number];
+  formatRelativeTime: (timestamp: number) => string;
+  replyLabel: string;
+  anonymousLabel: string;
+  language: 'vi' | 'en';
+  translateLabel: string;
+  originalLabel: string;
+  translatingLabel: string;
+  storyId: string;
+}) {
+  const [isTranslated, setIsTranslated] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [translatedComment, setTranslatedComment] = useState<string | null>(comment.contentTranslations?.[language] ?? null);
+
+  const handleToggleTranslation = async () => {
+    if (isTranslated) {
+      setIsTranslated(false);
+      return;
+    }
+
+    if (translatedComment) {
+      setIsTranslated(true);
+      return;
+    }
+
+    setIsTranslating(true);
+    try {
+      const nextComment = await translateText(comment.content, {
+        targetLanguage: language,
+      });
+      setTranslatedComment(nextComment);
+      setIsTranslated(true);
+
+      // Save translation to Firebase
+      const storyRef = doc(db, 'stories', storyId);
+      const storySnap = await getDoc(storyRef);
+      if (storySnap.exists()) {
+        const updatedComments = (storySnap.data().comments || []).map((c: any) =>
+          c.id === comment.id
+            ? {
+              ...c,
+              contentTranslations: {
+                ...c.contentTranslations,
+                [language]: nextComment,
+              },
+            }
+            : c
+        );
+        await updateDoc(storyRef, { comments: updatedComments });
+      }
+    } catch (error) {
+      console.error('Translate comment failed:', error);
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  const displayComment = isTranslated ? (translatedComment ?? comment.content) : comment.content;
+
+  return (
+    <div className="flex items-start gap-2.5">
+      {comment.authorImage ? (
+        <img src={comment.authorImage} alt={comment.authorName} className="h-9 w-9 rounded-full object-cover" referrerPolicy="no-referrer" />
+      ) : (
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent">
+          <User className="h-4 w-4 text-muted-foreground" />
+        </div>
+      )}
+      <div className="min-w-0 flex-1">
+        <div className="rounded-2xl bg-accent px-3 py-2.5 border border-border">
+          <p className="text-[14px] font-bold leading-none text-foreground">{comment.authorName || anonymousLabel}</p>
+          <p className="mt-1.5 break-words text-[15px] leading-relaxed text-foreground">{displayComment}</p>
+        </div>
+        <div className="mt-1.5 flex items-center gap-4 px-1 text-xs font-semibold text-muted-foreground">
+          <span>{formatRelativeTime(comment.createdAt)}</span>
+          <button type="button" className="transition-colors hover:text-foreground">{replyLabel}</button>
+          <button
+            type="button"
+            onClick={handleToggleTranslation}
+            disabled={isTranslating}
+            className="inline-flex items-center gap-1 transition-colors hover:text-foreground disabled:opacity-50"
+          >
+            <Languages className="h-3.5 w-3.5" />
+            {isTranslating ? translatingLabel : isTranslated ? originalLabel : translateLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAddComment, currentUserId }: StoryDetailProps) {
-  const { t, formatRelativeTime } = useI18n();
+  const { t, formatRelativeTime, language } = useI18n();
   const category = CATEGORIES.find((c) => c.value === story.category);
   const emotion = EMOTIONS.find((e) => e.value === story.emotion);
   const [commentText, setCommentText] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [isStoryTranslated, setIsStoryTranslated] = useState(false);
+  const [isTranslatingStory, setIsTranslatingStory] = useState(false);
+  const [translatedStory, setTranslatedStory] = useState<{ title: string; content: string } | null>(
+    story.titleTranslations?.[language] && story.contentTranslations?.[language]
+      ? { title: story.titleTranslations[language], content: story.contentTranslations[language] }
+      : null,
+  );
+
+  const visibleTitle = isStoryTranslated ? (translatedStory?.title ?? story.title) : story.title;
+  const visibleContent = isStoryTranslated ? (translatedStory?.content ?? story.content) : story.content;
 
   const hasUpvoted = !!(currentUserId && story.upvotedBy?.includes(currentUserId));
   const hasDownvoted = !!(currentUserId && story.downvotedBy?.includes(currentUserId));
@@ -48,6 +164,44 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
       setCommentText('');
     } finally {
       setIsSubmittingComment(false);
+    }
+  };
+
+  const handleToggleStoryTranslation = async () => {
+    if (isStoryTranslated) {
+      setIsStoryTranslated(false);
+      return;
+    }
+
+    if (translatedStory) {
+      setIsStoryTranslated(true);
+      return;
+    }
+
+    setIsTranslatingStory(true);
+    try {
+      const [nextTitle, nextContent] = await translateTexts([story.title, story.content], {
+        targetLanguage: language,
+      });
+      setTranslatedStory({ title: nextTitle, content: nextContent });
+      setIsStoryTranslated(true);
+
+      // Save translation to Firebase
+      const storyRef = doc(db, 'stories', story.id);
+      await updateDoc(storyRef, {
+        titleTranslations: {
+          ...story.titleTranslations,
+          [language]: nextTitle,
+        },
+        contentTranslations: {
+          ...story.contentTranslations,
+          [language]: nextContent,
+        },
+      });
+    } catch (error) {
+      console.error('Translate story failed:', error);
+    } finally {
+      setIsTranslatingStory(false);
     }
   };
 
@@ -86,8 +240,20 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
               </div>
             </div>
 
-            <h1 className="mb-2 text-2xl font-bold leading-tight text-foreground">{story.title}</h1>
-            <p className="whitespace-pre-wrap text-[17px] leading-relaxed text-foreground">{story.content}</p>
+            <div className="mb-3 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleToggleStoryTranslation}
+                disabled={isTranslatingStory}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-50"
+              >
+                <Languages className="h-3.5 w-3.5" />
+                {isTranslatingStory ? t('storyDetail.translating') : isStoryTranslated ? t('storyDetail.original') : t('storyDetail.translate')}
+              </button>
+            </div>
+
+            <h1 className="mb-2 text-2xl font-bold leading-tight text-foreground">{visibleTitle}</h1>
+            <p className="whitespace-pre-wrap text-[17px] leading-relaxed text-foreground">{visibleContent}</p>
 
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <span
@@ -151,25 +317,18 @@ export default function StoryDetail({ story, onClose, onUpvote, onDownvote, onAd
           {commentsEnabled && totalComments > 0 && (
             <div className="mt-3 space-y-4">
               {story.comments?.map((comment) => (
-                <div key={comment.id} className="flex items-start gap-2.5">
-                  {comment.authorImage ? (
-                    <img src={comment.authorImage} alt={comment.authorName} className="h-9 w-9 rounded-full object-cover" referrerPolicy="no-referrer" />
-                  ) : (
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent">
-                      <User className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <div className="rounded-2xl bg-accent px-3 py-2.5 border border-border">
-                      <p className="text-[14px] font-bold leading-none text-foreground">{comment.authorName || t('storyDetail.anonymous')}</p>
-                      <p className="mt-1.5 break-words text-[15px] leading-relaxed text-foreground">{comment.content}</p>
-                    </div>
-                    <div className="mt-1.5 flex items-center gap-4 px-1 text-xs font-semibold text-muted-foreground">
-                      <span>{formatRelativeTime(comment.createdAt)}</span>
-                      <button type="button" className="transition-colors hover:text-foreground">{t('storyDetail.reply')}</button>
-                    </div>
-                  </div>
-                </div>
+                <TranslatedComment
+                  key={comment.id}
+                  comment={comment}
+                  formatRelativeTime={formatRelativeTime}
+                  replyLabel={t('storyDetail.reply')}
+                  anonymousLabel={t('storyDetail.anonymous')}
+                  language={language}
+                  translateLabel={t('storyDetail.translate')}
+                  originalLabel={t('storyDetail.original')}
+                  translatingLabel={t('storyDetail.translating')}
+                  storyId={story.id}
+                />
               ))}
             </div>
           )}

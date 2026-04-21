@@ -2,9 +2,12 @@ import { Story } from '../types';
 import { CATEGORIES, EMOTIONS } from '../constants';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
-import { ThumbsUp, ThumbsDown, Clock, User, MessageCircle } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Clock, User, MessageCircle, Languages } from 'lucide-react';
 import { useState } from 'react';
 import { useI18n } from '../i18n';
+import { translateTexts } from '../lib/translation';
+import { db } from '../firebase';
+import { doc, updateDoc } from 'firebase/firestore';
 
 interface StoryCardProps {
   story: Story;
@@ -17,12 +20,73 @@ interface StoryCardProps {
 }
 
 export default function StoryCard({ story, onClick, onUpvote, onDownvote, onComment, currentUserId }: StoryCardProps) {
-  const { t, formatRelativeTime } = useI18n();
+  const { t, formatRelativeTime, language } = useI18n();
   const category = CATEGORIES.find(c => c.value === story.category);
   const emotion = EMOTIONS.find(e => e.value === story.emotion);
   const hasUpvoted = currentUserId && story.upvotedBy?.includes(currentUserId);
   const hasDownvoted = currentUserId && story.downvotedBy?.includes(currentUserId);
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
+  const [showTranslated, setShowTranslated] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [translatedTitle, setTranslatedTitle] = useState<string | null>(null);
+  const [translatedContent, setTranslatedContent] = useState<string | null>(null);
+
+  const storedTitleTranslation = story.titleTranslations?.[language];
+  const storedContentTranslation = story.contentTranslations?.[language];
+  const hasStoredTranslation = !!(storedTitleTranslation && storedContentTranslation);
+
+  const visibleTitle = showTranslated
+    ? (translatedTitle ?? storedTitleTranslation ?? story.title)
+    : story.title;
+  const visibleContent = showTranslated
+    ? (translatedContent ?? storedContentTranslation ?? story.content)
+    : story.content;
+
+  const handleToggleTranslation = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+
+    if (showTranslated) {
+      setShowTranslated(false);
+      return;
+    }
+
+    if (translatedTitle && translatedContent) {
+      setShowTranslated(true);
+      return;
+    }
+
+    if (hasStoredTranslation) {
+      setShowTranslated(true);
+      return;
+    }
+
+    setIsTranslating(true);
+    try {
+      const [nextTitle, nextContent] = await translateTexts([story.title, story.content], {
+        targetLanguage: language,
+      });
+      setTranslatedTitle(nextTitle);
+      setTranslatedContent(nextContent);
+      setShowTranslated(true);
+
+      // Save translation to Firebase
+      const storyRef = doc(db, 'stories', story.id);
+      await updateDoc(storyRef, {
+        titleTranslations: {
+          ...story.titleTranslations,
+          [language]: nextTitle,
+        },
+        contentTranslations: {
+          ...story.contentTranslations,
+          [language]: nextContent,
+        },
+      });
+    } catch (error) {
+      console.error('Translate story card failed:', error);
+    } finally {
+      setIsTranslating(false);
+    }
+  };
 
   const upvoteCount = story.upvotedBy?.length || 0;
   const downvoteCount = story.downvotedBy?.length || 0;
@@ -51,13 +115,23 @@ export default function StoryCard({ story, onClick, onUpvote, onDownvote, onComm
           )}
         </div>
         <CardTitle className="text-lg font-serif font-bold line-clamp-2 group-hover:text-primary transition-colors leading-tight">
-          {story.title}
+          {visibleTitle}
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6 pt-3 space-y-4">
         <p className="text-sm text-foreground/70 leading-relaxed line-clamp-3">
-          {story.content}
+          {visibleContent}
         </p>
+
+        <button
+          type="button"
+          onClick={handleToggleTranslation}
+          disabled={isTranslating}
+          className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-50"
+        >
+          <Languages className="h-3.5 w-3.5" />
+          {isTranslating ? t('storyDetail.translating') : showTranslated ? t('storyDetail.original') : t('storyDetail.translate')}
+        </button>
 
         <div className="flex items-center justify-between pt-3 border-t border-border/30">
           <div className="flex items-center gap-3 text-[11px] text-muted font-bold uppercase tracking-wider">
@@ -70,10 +144,9 @@ export default function StoryCard({ story, onClick, onUpvote, onDownvote, onComm
               onMouseLeave={() => setHoveredButton(null)}
               className="flex items-center gap-1.5 px-2 py-1.5 rounded-md transition-all hover:bg-accent/50"
             >
-              <ThumbsUp 
-                className={`w-4 h-4 transition-colors ${
-                  hoveredButton === 'upvote' || hasUpvoted ? 'text-green-600 dark:text-green-400' : 'text-muted'
-                }`} 
+              <ThumbsUp
+                className={`w-4 h-4 transition-colors ${hoveredButton === 'upvote' || hasUpvoted ? 'text-green-600 dark:text-green-400' : 'text-muted'
+                  }`}
               />
               <span className="font-semibold">{upvoteCount}</span>
             </button>
@@ -86,10 +159,9 @@ export default function StoryCard({ story, onClick, onUpvote, onDownvote, onComm
               onMouseLeave={() => setHoveredButton(null)}
               className="flex items-center gap-1.5 px-2 py-1.5 rounded-md transition-all hover:bg-accent/50"
             >
-              <ThumbsDown 
-                className={`w-4 h-4 transition-colors ${
-                  hoveredButton === 'downvote' || hasDownvoted ? 'text-red-600 dark:text-red-400' : 'text-muted'
-                }`} 
+              <ThumbsDown
+                className={`w-4 h-4 transition-colors ${hoveredButton === 'downvote' || hasDownvoted ? 'text-red-600 dark:text-red-400' : 'text-muted'
+                  }`}
               />
               <span className="font-semibold">{downvoteCount}</span>
             </button>
@@ -104,10 +176,9 @@ export default function StoryCard({ story, onClick, onUpvote, onDownvote, onComm
               disabled={!commentsEnabled}
               className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md transition-all ml-1 ${commentsEnabled ? 'hover:bg-accent/50' : 'opacity-45 cursor-not-allowed'}`}
             >
-              <MessageCircle 
-                className={`w-4 h-4 transition-colors ${
-                  commentsEnabled && hoveredButton === 'comment' ? 'text-blue-600 dark:text-blue-400' : 'text-muted'
-                }`} 
+              <MessageCircle
+                className={`w-4 h-4 transition-colors ${commentsEnabled && hoveredButton === 'comment' ? 'text-blue-600 dark:text-blue-400' : 'text-muted'
+                  }`}
               />
               <span className="font-semibold">{commentCount}</span>
             </button>

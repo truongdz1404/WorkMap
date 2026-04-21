@@ -10,9 +10,10 @@ import Navbar from './components/Navbar';
 import { AnimatePresence, motion } from 'motion/react';
 import { AlertCircle, PanelBottomOpen, PanelBottomClose } from 'lucide-react';
 import { useI18n } from './i18n';
+import { detectLanguage } from './lib/translation';
 
 export default function App() {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const MOBILE_BREAKPOINT = 700;
   const DEFAULT_ANONYMOUS_AVATAR = 'https://scontent.fhan20-1.fna.fbcdn.net/v/t39.35477-6/480772267_8870171503091593_8950035799029425225_n.jpg?stp=cp0_dst-jpg_s50x50_tt6&_nc_cat=1&ccb=1-7&_nc_sid=ee2d7f&_nc_eui2=AeHx_i2sy1oVJUE7vihfADrZyo1AD-kF533KjUAP6QXnfbJ1NptTMlw3iNe4h7fLZhAz2Oc2Q-z6-H3fCngupBFs&_nc_ohc=r3qM0gJL1IQQ7kNvwEheqky&_nc_oc=AdpGoaBJi797gbe--fN-wYwGOmzehHENw6IQNIl8CtVEdheWP_M2pY9Qm_Dn2rhXn3k&_nc_zt=14&_nc_ht=scontent.fhan20-1.fna&_nc_gid=t61r1muLHw4PwcKD2Rqxyw&_nc_ss=7a3a8&oh=00_Af1g8pMSMNj4LU172by_6j1YL4wMyfl2_R5FVS4LVZUIzQ&oe=69EB7ABB';
   const [user, setUser] = useState<User | null>(null);
@@ -174,6 +175,7 @@ export default function App() {
         ...(data.isAnonymous
           ? { authorImage: DEFAULT_ANONYMOUS_AVATAR }
           : (user?.photoURL ? { authorImage: user.photoURL } : {})),
+        sourceLanguage: detectLanguage(`${data.title} ${data.content}`),
         comments: [],
       });
       setIsAddingStory(false);
@@ -254,6 +256,7 @@ export default function App() {
         authorName: user.displayName || t('app.anonymousName'),
         ...(user.photoURL ? { authorImage: user.photoURL } : {}),
         content: commentText,
+        sourceLanguage: detectLanguage(commentText),
         createdAt: Date.now(),
       };
       const storyRef = doc(db, 'stories', storyId);

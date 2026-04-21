@@ -16,7 +16,7 @@ async function startServer() {
 
   // API routes
   app.get("/api/health", (req, res) => {
-    res.json({ status: "ok", message: "WorkMap API is running" });
+    res.json({ status: "ok", message: "DayOneDay API is running" });
   });
 
   // Vite middleware for development

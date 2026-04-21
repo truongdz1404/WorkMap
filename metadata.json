@@ -1,5 +1,5 @@
 {
-  "name": "WorkMap",
+  "name": "DayOneDay",
   "description": "A community-driven interactive map platform for sharing workplace experiences, problems, and solutions.",
   "requestFramePermissions": ["geolocation"],
   "majorCapabilities": ["interactive-map", "storytelling", "community"]

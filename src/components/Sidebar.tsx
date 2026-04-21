@@ -5,7 +5,7 @@ import StoryCard from './StoryCard';
 import { Input } from './ui/input';
 import { ScrollArea } from './ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Search, Filter, Map as MapIcon, List, Database, Loader } from 'lucide-react';
+import { Search, Filter, List, Database, Loader } from 'lucide-react';
 import { Button } from './ui/button';
 import { useI18n } from '../i18n';
 
@@ -60,9 +60,7 @@ export default function Sidebar({ stories, onSelectStory, onFilterChange, select
     <div className="z-10 flex h-full min-h-0 w-full flex-col border-t border-border bg-card shadow-xl min-[700px]:w-[340px] min-[700px]:border-l min-[700px]:border-t-0">
       <div className="border-b border-border px-4 py-3 sm:px-6 sm:py-6 min-[700px]:px-8 min-[700px]:py-8">
         <div className="mb-3 hidden items-center gap-2 sm:mb-5 min-[700px]:mb-6 min-[700px]:flex">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/20 md:h-10 md:w-10">
-            <MapIcon className="h-5 w-5 text-white md:h-6 md:w-6" />
-          </div>
+          <img src="/logo.png" alt="DayOneDay logo" className="h-9 w-9 rounded-xl object-cover shadow-lg md:h-10 md:w-10" />
           <div>
             <h1 className="text-lg font-serif font-bold tracking-tight text-foreground min-[700px]:text-xl">{t('nav.brand')}</h1>
             <p className="text-[10px] uppercase font-bold tracking-widest text-muted">{t('sidebar.communityStories')}</p>

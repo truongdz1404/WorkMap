@@ -1,6 +1,6 @@
 import { User } from 'firebase/auth';
 import { Button } from './ui/button';
-import { LogIn, LogOut, User as UserIcon, Plus, MapPin, Languages, Moon, Sun } from 'lucide-react';
+import { LogIn, LogOut, User as UserIcon, Plus, Languages, Moon, Sun } from 'lucide-react';
 import { useI18n } from '../i18n';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -19,9 +19,7 @@ export default function Navbar({ user, onLogin, onLogout, onAddStory }: NavbarPr
     <div className="absolute left-2 right-2 top-2 z-20 flex flex-wrap items-center gap-2 sm:left-4 sm:right-4 sm:top-4 sm:gap-3 md:left-6 md:right-auto md:top-6 md:flex-nowrap md:gap-4 lg:left-8 lg:top-8">
       <div className="flex min-w-0 flex-1 items-center gap-3 rounded-full border border-border bg-white/90 px-4 py-2 shadow-lg backdrop-blur-md sm:gap-4 sm:px-5 md:flex-none md:gap-6 md:px-6 dark:bg-card/90">
         <div className="flex min-w-0 items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-green-500 to-green-600 shadow-md">
-            <MapPin className="h-5 w-5 text-white" />
-          </div>
+          <img src="/logo.png" alt="DayOneDay logo" className="h-8 w-8 rounded-lg object-cover shadow-md" />
           <div className="truncate font-serif text-base font-bold tracking-tight text-primary sm:text-lg">{t('nav.brand')}</div>
         </div>
         <div className="hidden md:flex items-center gap-4 text-[11px] font-bold uppercase tracking-widest text-muted">
